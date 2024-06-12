@@ -745,15 +745,38 @@ def get_master_info(url):
 
 
 def get_valid_books():
-    response = requests.get(
-        "https://api.github.com/repos/official-stockfish/books/git/trees/master?recursive=1"
-    ).json()
-    books_list = (
-        str(Path(item["path"]).stem)
-        for item in response["tree"]
-        if item["type"] == "blob" and item["path"].endswith((".epd.zip", ".pgn.zip"))
-    )
-    return books_list
+    try:
+        url = "https://api.github.com/repos/official-stockfish/books/git/trees/master?recursive=1"
+        print(f"Fetching URL: {url}", flush=True)
+        response = requests.get(url)
+        print(f"HTTP Status Code: {response.status_code}", flush=True)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        
+        # Print raw response for debugging
+        print("Raw Response:", response.text[:500], flush=True)  # Print the first 500 characters of the response
+
+        response_data = response.json()
+        
+        if 'tree' not in response_data:
+            print("Key 'tree' not found in the response:", response_data, flush=True)
+            return []
+        
+        books_list = [
+            str(Path(item["path"]).stem)
+            for item in response_data["tree"]
+            if item["type"] == "blob" and item["path"].endswith((".epd.zip", ".pgn.zip"))
+        ]
+        return books_list
+    
+    except requests.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}", flush=True)
+        return []
+    except requests.RequestException as req_err:
+        print(f"Error fetching data: {req_err}", flush=True)
+        return []
+    except ValueError as json_err:
+        print(f"Error parsing JSON: {json_err}", flush=True)
+        return []
 
 
 def get_sha(branch, repo_url):
