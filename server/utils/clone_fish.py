@@ -7,7 +7,7 @@ from bson.binary import Binary
 from pymongo import ASCENDING, MongoClient
 
 # fish_host = 'http://localhost:6543'
-fish_host = "http://149.202.73.158/"  # 'http://tests.montychess.org'
+fish_host = "http://149.202.73.158/"  # 'http://montychess.org'
 
 conn = MongoClient("localhost")
 

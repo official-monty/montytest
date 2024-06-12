@@ -687,7 +687,7 @@ class RunDb:
         for task_id, run in dead_tasks:
             task = run["tasks"][task_id]
             print(
-                "dead task: run: https://tests.montychess.org/tests/view/{} task_id: {} worker: {}".format(
+                "dead task: run: https://montychess.org/tests/view/{} task_id: {} worker: {}".format(
                     run["_id"], task_id, worker_name(task["worker_info"])
                 ),
                 flush=True,
@@ -1417,7 +1417,7 @@ After fixing the issues you can unblock the worker at
         self.handle_crash_or_time(run, task_id)
         self.buffer(run, False)
         print(
-            "Failed_task: failure for: https://tests.montychess.org/tests/view/{}, "
+            "Failed_task: failure for: https://montychess.org/tests/view/{}, "
             "task_id: {}, worker: {}, reason: '{}'".format(
                 run_id, task_id, worker_name(task["worker_info"]), message
             ),

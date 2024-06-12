@@ -97,13 +97,13 @@
       <em>live_elo page</em>
       of a test with typical URL
       <a
-        href="https://tests.montychess.org/tests/live_elo/5e15b3e061fe5f83a67dd926"
-        >https://tests.montychess.org/tests/live_elo/5e15b3e061fe5f83a67dd926</a
+        href="https://montychess.org/tests/live_elo/5e15b3e061fe5f83a67dd926"
+        >https://montychess.org/tests/live_elo/5e15b3e061fe5f83a67dd926</a
       >
       or the <em>raw statistics page</em> with typical URL
       <a
-        href="http://tests.montychess.org/tests/stats/5e15b3e061fe5f83a67dd926"
-        >http://tests.montychess.org/tests/stats/5e15b3e061fe5f83a67dd926</a
+        href="http://montychess.org/tests/stats/5e15b3e061fe5f83a67dd926"
+        >http://montychess.org/tests/stats/5e15b3e061fe5f83a67dd926</a
       >.
     </li>
     <li>
