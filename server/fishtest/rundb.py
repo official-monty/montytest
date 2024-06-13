@@ -26,7 +26,6 @@ from fishtest.schemas import (
     nn_schema,
     pgns_schema,
     runs_schema,
-    valid_aggregated_data,
 )
 from fishtest.stats.stat_util import SPRT_elo
 from fishtest.userdb import UserDb
@@ -162,12 +161,9 @@ class RunDb:
             # Make sure that the run object does not change while we are
             # validating it
             with self.active_run_lock(run_id):
-                # We verify only the aggregated data since the other
-                # data is not synchronized and may be in a transient
-                # inconsistent state
-                validate(valid_aggregated_data, run, "run")
+                validate(runs_schema, run, "run")
                 print(
-                    f"Validate_random_run: validated aggregated data in cache run {run_id}...",
+                    f"Validate_random_run: validated cache run {run_id}...",
                     flush=True,
                 )
         except ValidationError as e:
@@ -220,6 +216,46 @@ class RunDb:
                             del self.connections_counter[remote_addr]
                     except Exception as e:
                         print(f"Error while deleting connection: {str(e)}", flush=True)
+
+    def set_bad_task(self, task_id, run, residual=None, residual_color=None):
+        zero_stats = {
+            "wins": 0,
+            "losses": 0,
+            "draws": 0,
+            "crashes": 0,
+            "time_losses": 0,
+            "pentanomial": 5 * [0],
+        }
+        run_id = str(run["_id"])
+        with self.active_run_lock(run_id):
+            task = run["tasks"][task_id]
+            if "bad" in task:
+                return
+            self.set_inactive_task(task_id, run)
+
+            if "bad_tasks" not in run:
+                run["bad_tasks"] = []
+            bad_task = copy.deepcopy(task)
+            run["bad_tasks"].append(bad_task)
+            bad_task["task_id"] = task_id
+            bad_task["bad"] = True
+
+            if residual is not None:
+                bad_task["residual"] = residual
+            if residual_color is not None:
+                bad_task["residual_color"] = residual_color
+
+            stats = task["stats"]
+            run["committed_games"] -= stats["wins"] + stats["losses"] + stats["draws"]
+
+            # Rather than removing the task, we mark
+            # it as bad.
+            # In this way the numbering of tasks
+            # does not change.
+            # For safety we also set the stats
+            # to zero.
+            task["bad"] = True
+            task["stats"] = copy.deepcopy(zero_stats)
 
     # Do not run two copies of this function in parallel!
     def update_aggregated_data(self):
@@ -423,30 +459,31 @@ class RunDb:
             "total_games": 0,
         }
 
-        # administrative flags
+        # Administrative flags.
+        # If the following comments are incorrect then that's a bug!
 
-        # "finished"
-        # set in stop_run(), /api/stop_run, /tests/delete
-        # cleared in purge_run(), /tests/modify
+        # set in set_inactive_run()
+        # cleared in set_active_run()
         new_run["finished"] = False
 
         # "deleted"
         # set in /tests/delete
+        # cleared in set_active_run()
         new_run["deleted"] = False
 
         # "failed"
         # set in /api/stop_run
-        # cleared in /tests/modify
+        # cleared in set_active_run()
         new_run["failed"] = False
 
         # "is_green"
-        # set in stop_run()
-        # cleared in purge_run(), /tests/modify
+        # set in stop_run(), purge_run()
+        # cleared in purge_run(), set_active_run()
         new_run["is_green"] = False
 
         # "is_yellow"
-        # set in stop_run()
-        # cleared in purge_run(), /tests/modify
+        # set in stop_run(), purge_run()
+        # cleared in purge_run(), set_active_run()
         new_run["is_yellow"] = False
 
         if rescheduled_from:
@@ -740,11 +777,7 @@ class RunDb:
         unfinished_runs = self.get_unfinished_runs(username=username)
         runs = {"pending": [], "active": []}
         for run in unfinished_runs:
-            state = (
-                "active"
-                if any(task["active"] for task in reversed(run["tasks"]))
-                else "pending"
-            )
+            state = "active" if run["workers"] > 0 else "pending"
             runs[state].append(run)
         runs["pending"].sort(
             key=lambda run: (
@@ -770,11 +803,11 @@ class RunDb:
         games_per_minute = 0.0
         machines_count = 0
         for run in runs["active"]:
+            machines_count += run["workers"]
+            cores += run["cores"]
             for task_id, task in enumerate(run["tasks"]):
                 if task["active"]:
-                    machines_count += 1
                     concurrency = int(task["worker_info"]["concurrency"])
-                    cores += concurrency
                     nps += concurrency * task["worker_info"]["nps"]
                     if task["worker_info"]["nps"] != 0:
                         games_per_minute += (
@@ -793,15 +826,6 @@ class RunDb:
                 pending_hours += eta
             results = run["results"]
             run["results_info"] = format_results(results, run)
-            if "Pending..." in run["results_info"]["info"]:
-                if cores > 0:
-                    run["results_info"]["info"][0] += " ({:.1f} hrs)".format(eta)
-                if "sprt" in run["args"]:
-                    sprt = run["args"]["sprt"]
-                    elo_model = sprt.get("elo_model", "BayesElo")
-                    run["results_info"]["info"].append(
-                        format_bounds(elo_model, sprt["elo0"], sprt["elo1"])
-                    )
         return (runs, pending_hours, cores, nps, games_per_minute, machines_count)
 
     def get_finished_runs(
@@ -1531,24 +1555,8 @@ After fixing the issues you can unblock the worker at
             # Special cases: crashes or time losses.
             if crash_or_time(task):
                 message = ""
-                bad_task = copy.deepcopy(task)
-                # The next two lines are a bit hacky but
-                # the correct residual and color may not have
-                # been set yet.
-                bad_task["residual"] = 10.0
-                bad_task["residual_color"] = "#FF6A6A"
-                bad_task["task_id"] = task_id
-                bad_task["bad"] = True
-                run["bad_tasks"].append(bad_task)
-                # Rather than removing the task, we mark
-                # it as bad.
-                # In this way the numbering of tasks
-                # does not change.
-                # For safety we also set the stats
-                # to zero.
-                task["bad"] = True
-                self.set_inactive_task(task_id, run)
-                task["stats"] = copy.deepcopy(zero_stats)
+                # The residual or residual color my not have been set yet
+                self.set_bad_task(task_id, run, residual=10.0, residual_color="#FF6A6A")
 
         chi2 = get_chi2(run["tasks"])
         # Make sure the residuals are up to date.
@@ -1568,13 +1576,7 @@ After fixing the issues you can unblock the worker at
                 continue
             if task["worker_info"]["unique_key"] in bad_workers:
                 message = ""
-                bad_task = copy.deepcopy(task)
-                bad_task["task_id"] = task_id
-                bad_task["bad"] = True
-                run["bad_tasks"].append(bad_task)
-                task["bad"] = True
-                self.set_inactive_task(task_id, run)
-                task["stats"] = copy.deepcopy(zero_stats)
+                self.set_bad_task(task_id, run)
 
         if message == "":
             results = compute_results(run)
