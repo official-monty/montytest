@@ -1244,7 +1244,7 @@ def run_games(
                 "gauntlet",
             ]
             + pgnout
-            + ["-site", "https://montychess.org/tests" + run["_id"]]
+            + ["-site", "https://montychess.org/tests/view/" + run["_id"]]
             + [
                 "-event",
                 "Batch {}: {} vs {}".format(
