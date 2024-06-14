@@ -906,7 +906,7 @@ def validate_form(request):
             "https://api.github.com/repos/official-monty/Monty"
         )
     except Exception as e:
-        raise Exception(str(e)) from e
+        raise Exception("Error occurred while fetching master commit signatures") from e
 
     odds = request.POST.get("odds", "off")  # off checkboxes are not posted
     if odds == "off":
