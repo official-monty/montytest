@@ -289,7 +289,7 @@ def download_sri():
     try:
         return json.loads(
             download_from_github(
-                "worker/sri.txt", owner="official-monty", repo="fishtest"
+                "worker/sri.txt", owner="official-monty", repo="montytest"
             )
         )
     except:
