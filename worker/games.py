@@ -1048,11 +1048,11 @@ def run_games(
     new_engine_name = "monty_" + sha_new
     base_engine_name = "monty_" + sha_base
 
-    new_engine = testing_dir / (new_engine_name + EXE_SUFFIX)
-    base_engine = testing_dir / (base_engine_name + EXE_SUFFIX)
+    new_engine = testing_dir / new_engine_name
+    base_engine = testing_dir / base_engine_name
 
     # Build from sources new and base engines as needed.
-    if not new_engine.exists():
+    if not new_engine.with_suffix(EXE_SUFFIX).exists():
         setup_engine(
             new_engine,
             worker_dir,
@@ -1061,7 +1061,7 @@ def run_games(
             sha_new,
             repo_url,
         )
-    if not base_engine.exists():
+    if not base_engine.with_suffix(EXE_SUFFIX).exists():
         setup_engine(
             base_engine,
             worker_dir,
