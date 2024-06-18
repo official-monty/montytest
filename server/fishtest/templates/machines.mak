@@ -29,7 +29,7 @@
   <tbody>
     % for machine in machines_list:
       <%
-        cargo_version = ".".join([str(m) for m in machine['gcc_version']])
+        cargo_version = ".".join([str(m) for m in machine['cargo_version']])
         compiler = machine.get('compiler', 'cargo')
         python_version = ".".join([str(m) for m in machine['python_version']])
         version = str(machine['version']) + "*" * machine['modified']
