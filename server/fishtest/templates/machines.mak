@@ -18,7 +18,7 @@
       <th>UUID</th>
       <th>MNps</th>
       <th>RAM</th>
-      <th>System</th>
+      <th>CPU</th>
       <th>Compiler</th>
       <th>Python</th>
       <th>Worker</th>
@@ -52,7 +52,7 @@
         <td><a href="/workers/${worker_name_}">${machine['unique_key'].split('-')[0]}</a></td>
         <td>${f"{machine['nps'] / 1000000:.2f}"}</td>
         <td>${machine['max_memory']}</td>
-        <td>${machine['uname']}</td>
+        <td>${machine['ARCH']}</td>
         <td>${compiler} ${cargo_version}</td>
         <td>${python_version}</td>
         <td>${version}</td>

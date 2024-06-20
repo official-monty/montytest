@@ -16,6 +16,7 @@ import sys
 import tempfile
 import threading
 import time
+import cpuinfo
 from base64 import b64decode
 from contextlib import ExitStack
 from datetime import datetime, timedelta, timezone
@@ -347,6 +348,14 @@ def run_single_bench(engine, queue):
 
 
 def verify_signature(engine, signature, active_cores):
+    
+    try:
+        brand = cpuinfo.get_cpu_info()["brand_raw"]
+        freq = cpuinfo.get_cpu_info()["hz_actual_friendly"]
+        cpu = "{} {}".format(brand, freq)
+    except:
+        cpu = ""
+
     queue = multiprocessing.Queue()
 
     processes = [
@@ -380,7 +389,7 @@ def verify_signature(engine, signature, active_cores):
 
     bench_nps /= active_cores
 
-    return bench_nps
+    return bench_nps, cpu
 
 
 def download_from_github_raw(
@@ -1111,7 +1120,7 @@ def run_games(
     # Verify that the signatures are correct.
     run_errors = []
     try:
-        base_nps = verify_signature(
+        base_nps, cpu = verify_signature(
             base_engine,
             run["args"]["base_signature"],
             games_concurrency * threads,
@@ -1160,7 +1169,7 @@ def run_games(
         tc_limit = (tc_limit + new_tc_limit) / 2
 
     result["worker_info"]["nps"] = float(base_nps)
-    result["worker_info"]["ARCH"] = ""
+    result["worker_info"]["ARCH"] = cpu
 
     threads_cmd = []
     # This is disabled for now because monty doesn't have the Threads option
