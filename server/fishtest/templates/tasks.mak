@@ -52,7 +52,7 @@
       compiler: ${compiler} ${cargo_version};
       python: ${python_version};
       worker: ${version};
-      arch: ${ARCH}
+      cpu: ${ARCH}
     </td>
     <td>${str(task.get('last_updated', '-')).split('.')[0]}</td>
     <td>${f"{total:03d} / {task['num_games']:03d}"}</td>

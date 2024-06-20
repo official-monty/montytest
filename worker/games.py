@@ -1160,7 +1160,6 @@ def run_games(
         tc_limit = (tc_limit + new_tc_limit) / 2
 
     result["worker_info"]["nps"] = float(base_nps)
-    result["worker_info"]["ARCH"] = ""
 
     threads_cmd = []
     # This is disabled for now because monty doesn't have the Threads option

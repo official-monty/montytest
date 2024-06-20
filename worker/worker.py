@@ -20,6 +20,7 @@ import threading
 import time
 import traceback
 import uuid
+import cpuinfo
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from configparser import ConfigParser
 from contextlib import ExitStack
@@ -1548,6 +1549,18 @@ def worker():
 
     compiler, major, minor, patchlevel = options.compiler
     print("Using {} {}.{}.{}".format(compiler, major, minor, patchlevel))
+        
+    try:
+        brand = cpuinfo.get_cpu_info()["brand_raw"]
+    except:
+        brand = "?"
+        
+    try:
+        freq = cpuinfo.get_cpu_info()["hz_actual_friendly"]
+    except:
+        freq = ""
+        
+    cpu = "{} {}".format(brand, freq)
 
     uname = platform.uname()
     worker_info = {
@@ -1571,7 +1584,7 @@ def worker():
         "compiler": compiler,
         "unique_key": get_uuid(options),
         "modified": not unmodified,
-        "ARCH": "?",
+        "ARCH": cpu,
         "nps": 0.0,
     }
 
