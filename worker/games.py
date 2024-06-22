@@ -473,9 +473,8 @@ def setup_engine(
 
         cmd = [
             "make",
-            f"EXE={destination}",
-            f"EVALFILE={evalfile}",
-            f"POLICYFILE={policyfile}",
+            "montytest",
+            f"EXE={destination}"
         ]
 
         if os.path.exists(destination):
