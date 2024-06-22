@@ -472,10 +472,9 @@ def setup_engine(
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
         cmd = [
-            "make montytest",
-            f"EXE={destination}",
-            f"EVALFILE={evalfile}",
-            f"POLICYFILE={policyfile}",
+            "make",
+            "montytest",
+            f"EXE={destination}"
         ]
 
         if os.path.exists(destination):
