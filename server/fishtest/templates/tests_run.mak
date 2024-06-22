@@ -59,11 +59,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="stc_test"
                       data-options='{
                         "name": "STC",
-                        "tc": "10+0.1",
-                        "new_tc": "10+0.1",
+                        "tc": "20+0.2",
+                        "new_tc": "20+0.2",
                         "throughput": "100",
                         "threads": 1,
-                        "options": "Hash=16",
+                        "options": "Hash=32",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
                         "bounds": "standard STC",
@@ -80,11 +80,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="ltc_test"
                       data-options='{
                         "name": "LTC",
-                        "tc": "60+0.6",
-                        "new_tc": "60+0.6",
+                        "tc": "120+1.2",
+                        "new_tc": "120+1.2",
                         "throughput": "100",
                         "threads": 1,
-                        "options": "Hash=64",
+                        "options": "Hash=128",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
                         "bounds": "standard LTC"
@@ -98,11 +98,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="stc_smp_test"
                       data-options='{
                         "name": "STC SMP",
-                        "tc": "5+0.05",
-                        "new_tc": "5+0.05",
+                        "tc": "6+0.06",
+                        "new_tc": "6+0.06",
                         "throughput": "100",
-                        "threads": 8,
-                        "options": "Hash=64",
+                        "threads": 15,
+                        "options": "Hash=128",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
                         "bounds": "standard STC"
@@ -116,11 +116,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="ltc_smp_test"
                       data-options='{
                         "name": "LTC SMP",
-                        "tc": "20+0.2",
-                        "new_tc": "20+0.2",
+                        "tc": "24+0.24",
+                        "new_tc": "24+0.24",
                         "throughput": "100",
-                        "threads": 8,
-                        "options": "Hash=256",
+                        "threads": 15,
+                        "options": "Hash=512",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
                         "bounds": "standard LTC"
@@ -134,11 +134,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="vltc_test"
                       data-options='{
                         "name": "VLTC",
-                        "tc": "180+1.8",
-                        "new_tc": "180+1.8",
+                        "tc": "120+1.2",
+                        "new_tc": "120+1.2",
                         "throughput": "50",
-                        "threads": 1,
-                        "options": "Hash=192",
+                        "threads": 3,
+                        "options": "Hash=384",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
                         "bounds": "standard STC"
@@ -152,10 +152,10 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="vltc_smp_test"
                       data-options='{
                         "name": "VLTC SMP",
-                        "tc": "60+0.6",
-                        "new_tc": "60+0.6",
+                        "tc": "200+2",
+                        "new_tc": "200+2",
                         "throughput": "50",
-                        "threads": 8,
+                        "threads": 5,
                         "options": "Hash=512",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
@@ -170,11 +170,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="pt_test"
                       data-options='{
                         "name": "PT",
-                        "tc": "60+0.6",
-                        "new_tc": "60+0.6",
+                        "tc": "120+1.2",
+                        "new_tc": "120+1.2",
                         "throughput": "100",
                         "threads": 1,
-                        "options": "Hash=64",
+                        "options": "Hash=128",
                         "book": "${pt_book}",
                         "stop_rule": "stop-rule-games",
                         "games": 60000,
@@ -192,11 +192,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="pt_smp_test"
                       data-options='{
                         "name": "PT SMP",
-                        "tc": "60+0.6",
-                        "new_tc": "60+0.6",
+                        "tc": "200+2",
+                        "new_tc": "200+2",
                         "throughput": "100",
-                        "threads": 8,
-                        "options": "Hash=512",
+                        "threads": 5,
+                        "options": "Hash=1024",
                         "book": "${pt_book}",
                         "stop_rule": "stop-rule-games",
                         "games": 60000,
@@ -368,10 +368,10 @@
                 <div class="col-12 col-md">
                   <label for="bounds" class="form-label">SPRT Bounds</label>
                   <select class="form-select" id="bounds" name="bounds">
-                    <option value="standard STC">Standard STC ${fb(0.0, 2.0)}</option>
-                    <option value="standard LTC">Standard LTC ${fb(0.5, 2.5)}</option>
-                    <option value="regression STC">Non-regression STC ${fb(-1.75, 0.25)}</option>
-                    <option value="regression LTC">Non-regression LTC ${fb(-1.75, 0.25)}</option>
+                    <option value="standard STC">Standard STC ${fb(0.0, 4.0)}</option>
+                    <option value="standard LTC">Standard LTC ${fb(1.0, 5.0)}</option>
+                    <option value="regression STC">Non-regression STC ${fb(-3.5, 0.5)}</option>
+                    <option value="regression LTC">Non-regression LTC ${fb(-3.5, 0.5)}</option>
                     <option value="custom" ${'selected' if is_rerun else ''}>Custom bounds...</option>
                   </select>
                 </div>
