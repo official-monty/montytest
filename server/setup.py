@@ -19,9 +19,9 @@ requires = [
 ]
 
 setup(
-    name="fishtest-server",
+    name="montytest-server",
     version="0.1",
-    description="fishtest-server",
+    description="montytest-server",
     long_description=README + "\n\n" + CHANGES,
     classifiers=[
         "Programming Language :: Python",
@@ -39,7 +39,7 @@ setup(
     install_requires=requires,
     entry_points={
         "paste.app_factory": [
-            "main = fishtest:main",
+            "main = montytest:main",
         ],
     },
 )

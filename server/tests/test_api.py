@@ -6,7 +6,7 @@ import sys
 import unittest
 from datetime import datetime, timezone
 
-from fishtest.api import WORKER_VERSION, UserApi, WorkerApi
+from montytest.api import WORKER_VERSION, UserApi, WorkerApi
 from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized
 from pyramid.testing import DummyRequest
 from util import get_rundb

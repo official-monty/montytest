@@ -1,7 +1,7 @@
 import re
 import unittest
 
-from fishtest.views import get_master_info
+from montytest.views import get_master_info
 
 
 class CreateRunTest(unittest.TestCase):

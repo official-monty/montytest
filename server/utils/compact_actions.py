@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-from fishtest.actiondb import ActionDb
+from montytest.actiondb import ActionDb
 from pymongo import MongoClient
 
 conn = MongoClient()
-db = conn["fishtest_new"]
+db = conn["montytest_new"]
 actiondb = ActionDb(db)
 
 

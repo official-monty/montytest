@@ -43,7 +43,7 @@ class Create50LoginTest(unittest.TestCase):
             "JoeUser",
             "secret",
             "email@email.email",
-            "https://github.com/official-stockfish/Stockfish",
+            "https://github.com/official-monty/Monty",
         )
         self.config = testing.setUp()
         self.config.add_route("login", "/login")

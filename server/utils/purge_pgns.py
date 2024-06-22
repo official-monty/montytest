@@ -2,7 +2,7 @@
 import re
 from datetime import datetime, timedelta, timezone
 
-from fishtest.rundb import RunDb
+from montytest.rundb import RunDb
 from pymongo import DESCENDING
 
 

@@ -356,11 +356,11 @@ def parse_dict_header(value):
     """Parse lists of key, value pairs as described by RFC 2068 Section 2 and
     convert them into a python dict:
 
-    >>> d = parse_dict_header('foo="is a fish", bar="as well"')
+    >>> d = parse_dict_header('foo="is a monty", bar="as well"')
     >>> type(d) is dict
     True
     >>> sorted(d.items())
-    [('bar', 'as well'), ('foo', 'is a fish')]
+    [('bar', 'as well'), ('foo', 'is a monty')]
 
     If there is no value for a key it will be `None`:
 

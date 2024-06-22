@@ -3,8 +3,8 @@
 import sys
 from datetime import datetime, timedelta, timezone
 
-from fishtest.rundb import RunDb
-from fishtest.util import delta_date, diff_date, estimate_game_duration
+from montytest.rundb import RunDb
+from montytest.util import delta_date, diff_date, estimate_game_duration
 from pymongo import DESCENDING
 
 
