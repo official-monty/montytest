@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime, timezone
 
 import util
-from fishtest.api import WORKER_VERSION
+from montytest.api import WORKER_VERSION
 from pymongo import DESCENDING
 
 run_id = None

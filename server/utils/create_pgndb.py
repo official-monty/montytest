@@ -4,7 +4,7 @@ from pymongo import MongoClient
 
 conn = MongoClient("localhost")
 
-db = conn["fishtest_new"]
+db = conn["montytest_new"]
 
 db.drop_collection("pgns")
 

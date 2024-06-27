@@ -101,7 +101,7 @@ def convert_run(run):
 
 if __name__ == "__main__":
     client = pymongo.MongoClient()
-    runs_collection = client["fishtest_new"]["runs"]
+    runs_collection = client["montytest_new"]["runs"]
     runs = runs_collection.find({}).sort("_id", 1)
     count = 0
     print("Starting conversion...")

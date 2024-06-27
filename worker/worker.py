@@ -74,7 +74,7 @@ try:
     del google.colab
 except:
     pass
-CONFIGFILE = "fishtest.cfg"
+CONFIGFILE = "montytest.cfg"
 
 LOGO = r"""
 ______ _     _     _            _                        _
@@ -101,31 +101,31 @@ games.py  :             parse_cutechess_output()
 Apis used by the worker
 =======================
 
-<fishtest>     = https://montychess.org
+<montytest>     = https://montychess.org
 <github>       = https://api.github.com
 <github-books> = <github>/repos/official-monty/books
 
-Heartbeat           <fishtest>/api/beat                                         POST
+Heartbeat           <montytest>/api/beat                                         POST
 
 Setup task          <github>/rate_limit                                         GET
-                    <fishtest>/api/request_version                              POST
-                    <fishtest>/api/request_task                                 POST
-                    <fishtest>/api/nn/<nnue>                                    GET
+                    <montytest>/api/request_version                              POST
+                    <montytest>/api/request_task                                 POST
+                    <montytest>/api/nn/<nnue>                                    GET
                     <github-books>/git/trees/master                             GET
                     <github-books>/git/trees/master/blobs/<sha-cutechess-cli>   GET
                     <github-books>/git/trees/master/blobs/<sha-book>            GET
                     <github>/repos/<user-repo>/zipball/<sha>                    GET
 
-Main loop           <fishtest>/api/update_task                                  POST
-                    <fishtest>/api/request_spsa                                 POST
+Main loop           <montytest>/api/update_task                                  POST
+                    <montytest>/api/request_spsa                                 POST
 
-Finish task         <fishtest>/api/failed_task                                  POST
-                    <fishtest>/api/stop_run                                     POST
-                    <fishtest>/api/upload_pgn                                   POST
+Finish task         <montytest>/api/failed_task                                  POST
+                    <montytest>/api/stop_run                                     POST
+                    <montytest>/api/upload_pgn                                   POST
 
 
 The POST requests are json encoded. For the shape of a valid request, consult
-"api.py" in the Fishtest source.
+"api.py" in the montytest source.
 
 The POST requests return a json encoded dictionary. It may contain a key "error".
 In that case the corresponding value is an error message.
@@ -690,7 +690,7 @@ def setup_parameters(worker_dir):
         "--host",
         dest="host",
         default=config.get("parameters", "host"),
-        help="the hostname of the fishtest server",
+        help="the hostname of the montytest server",
     )
     parser.add_argument(
         "-p",
@@ -698,7 +698,7 @@ def setup_parameters(worker_dir):
         dest="port",
         default=config.getint("parameters", "port"),
         type=int,
-        help="the port of the fishtest server",
+        help="the port of the montytest server",
     )
     parser.add_argument(
         "-c",
@@ -1607,13 +1607,13 @@ def worker():
 
     # Start the main loop.
     delay = INITIAL_RETRY_TIME
-    fish_exit = False
+    monty_exit = False
     clear_binaries = True
     while current_state["alive"]:
-        if (worker_dir / "fish.exit").is_file():
+        if (worker_dir / "monty.exit").is_file():
             current_state["alive"] = False
-            print("Stopped by 'fish.exit' file")
-            fish_exit = True
+            print("Stopped by 'monty.exit' file")
+            monty_exit = True
             break
         success = fetch_and_handle_task(
             worker_info,
@@ -1638,13 +1638,13 @@ def worker():
             clear_binaries = False
             delay = INITIAL_RETRY_TIME
 
-    if fish_exit:
-        (worker_dir / "fish.exit").unlink()
+    if monty_exit:
+        (worker_dir / "monty.exit").unlink()
 
     print("Waiting for the heartbeat thread to finish...")
     heartbeat_thread.join(THREAD_JOIN_TIMEOUT)
 
-    return 0 if fish_exit else 1
+    return 0 if monty_exit else 1
 
 
 if __name__ == "__main__":

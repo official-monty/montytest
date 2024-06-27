@@ -50,7 +50,7 @@ class workerTest(unittest.TestCase):
         self.assertTrue(config.has_option("parameters", "concurrency"))
 
     def test_worker_script_with_no_args(self):
-        assert not (Path.cwd() / "fishtest.cfg").exists()
+        assert not (Path.cwd() / "montytest.cfg").exists()
         p = subprocess.run(["python", "worker.py"])
         self.assertEqual(p.returncode, 1)
 

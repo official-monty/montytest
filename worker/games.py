@@ -549,7 +549,7 @@ def adjust_tc(tc, factor):
     else:
         time_tc = float(chunks[0])
 
-    # Rebuild scaled_tc now: cutechess-cli and stockfish parse 3 decimal places.
+    # Rebuild scaled_tc now: cutechess-cli and monty parse 3 decimal places.
     scaled_tc = "{:.3f}".format(time_tc * factor)
     tc_limit = time_tc * factor * 3
     if increment > 0.0:
@@ -704,7 +704,7 @@ def parse_cutechess_output(
             raise RunException(message)
 
         # Parse line like this:
-        # Finished game 1 (stockfish vs base): 0-1 {White disconnects}
+        # Finished game 1 (monty vs base): 0-1 {White disconnects}
         if "disconnects" in line or "connection stalls" in line:
             result["stats"]["crashes"] += 1
 
@@ -712,7 +712,7 @@ def parse_cutechess_output(
             result["stats"]["time_losses"] += 1
 
         # Parse line like this:
-        # Score of stockfish vs base: 0 - 0 - 1  [0.500] 1
+        # Score of monty vs base: 0 - 0 - 1  [0.500] 1
         if "Score" in line:
             # Parsing sometimes fails. We want to understand why.
             try:
@@ -1141,7 +1141,7 @@ def run_games(
 
     if base_nps < 61362 / (1 + math.tanh((worker_concurrency - 1) / 8)):
         raise FatalException(
-            "This machine is too slow ({} nps / thread) to run fishtest effectively - sorry!".format(
+            "This machine is too slow ({} nps / thread) to run montytest effectively - sorry!".format(
                 base_nps
             )
         )

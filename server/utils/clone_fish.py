@@ -6,14 +6,14 @@ import requests
 from bson.binary import Binary
 from pymongo import ASCENDING, MongoClient
 
-# fish_host = 'http://localhost:6543'
-fish_host = "http://149.202.73.158/"  # 'http://montychess.org'
+# monty_host = 'http://localhost:6543'
+monty_host = "http://149.202.73.158/"  # 'http://montychess.org'
 
 conn = MongoClient("localhost")
 
-# conn.drop_database('fish_clone')
+# conn.drop_database('monty_clone')
 
-db = conn["fish_clone"]
+db = conn["monty_clone"]
 
 pgndb = db["pgns"]
 runs = db["runs"]
@@ -22,14 +22,14 @@ pgndb.ensure_index([("run_id", ASCENDING)])
 
 
 def main():
-    """clone a fishtest database with PGNs and runs with the REST API"""
+    """clone a montytest database with PGNs and runs with the REST API"""
 
     skip = 0
     count = 0
     in_sync = False
     loaded = {}
     while True:
-        pgn_list = requests.get(fish_host + "/api/pgn_100/" + str(skip)).json()
+        pgn_list = requests.get(monty_host + "/api/pgn_100/" + str(skip)).json()
         for pgn_file in pgn_list:
             print(pgn_file)
             if pgndb.find_one({"run_id": pgn_file}):
@@ -41,9 +41,9 @@ def main():
                 run_id = pgn_file.split("-")[0]
                 if not runs.find_one({"_id": run_id}):
                     print("New run: " + run_id)
-                    run = requests.get(fish_host + "/api/get_run/" + run_id).json()
+                    run = requests.get(monty_host + "/api/get_run/" + run_id).json()
                     runs.insert(run)
-                pgn = requests.get(fish_host + "/api/pgn/" + pgn_file)
+                pgn = requests.get(monty_host + "/api/pgn/" + pgn_file)
                 pgndb.insert(
                     dict(pgn_bz2=Binary(bz2.compress(pgn.content)), run_id=pgn_file)
                 )
