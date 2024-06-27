@@ -1139,7 +1139,7 @@ def run_games(
     if run_errors:
         raise RunException("\n".join(run_errors))
 
-    if base_nps < 122725 / (1 + math.tanh((worker_concurrency - 1) / 8)):
+    if base_nps < 61362 / (1 + math.tanh((worker_concurrency - 1) / 8)):
         raise FatalException(
             "This machine is too slow ({} nps / thread) to run montytest effectively - sorry!".format(
                 base_nps
@@ -1148,7 +1148,7 @@ def run_games(
     
     # Value from running bench on 32 processes on Ryzen 9 7950X
     # also set in rundb.py and delta_update_users.py
-    factor = 368174 / base_nps
+    factor = 184087 / base_nps
 
     # Adjust CPU scaling.
     _, tc_limit_ltc = adjust_tc("60+0.6", factor)
