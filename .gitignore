@@ -5,8 +5,8 @@
 env/
 venv/
 worker/api.log*
-worker/fish.exit
-worker/fishtest.cfg
+worker/monty.exit
+worker/montytest.cfg
 worker/_testing_*
 worker/testing
 worker/worker.lock

@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 
 import pymongo
-from fishtest.util import worker_name
+from montytest.util import worker_name
 
 
 def show(p):

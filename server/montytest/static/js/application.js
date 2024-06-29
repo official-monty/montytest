@@ -343,12 +343,8 @@ function comparer(idx, asc) {
             ? p1 - p2
             : v1 !== "" &&
                 v2 !== "" &&
-                !isNaN(
-                  padDotVersion(v1.replace("cargo", "")),
-                ) &&
-                !isNaN(
-                  padDotVersion(v2.replace("cargo", "")),
-                )
+                !isNaN(padDotVersion(v1.replace("cargo", ""))) &&
+                !isNaN(padDotVersion(v2.replace("cargo", "")))
               ? padDotVersionStr(v1)
                   .toString()
                   .localeCompare(padDotVersionStr(v2))

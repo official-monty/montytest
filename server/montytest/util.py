@@ -278,7 +278,9 @@ def format_results(run_results, run):
                 run_results["pentanomial"]
             )
         else:
-            elo, elo95, los = montytest.stats.stat_util.get_elo([WLD[1], WLD[2], WLD[0]])
+            elo, elo95, los = montytest.stats.stat_util.get_elo(
+                [WLD[1], WLD[2], WLD[0]]
+            )
 
         # Display the results
         eloInfo = "Elo: {:.2f} ± {:.1f} (95%)".format(elo, elo95)

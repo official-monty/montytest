@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime, timezone
 
 import util
-from fishtest.views import login, signup
+from montytest.views import login, signup
 from pyramid import testing
 
 

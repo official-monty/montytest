@@ -92,7 +92,7 @@ class RunDb:
             self.actiondb.system_event(message=f"start montytest@{self.port}")
 
         self.__is_primary_instance = is_primary_instance
-        
+
         # Create a lock for each active run
         self.run_lock = threading.Lock()
         self.active_runs = {}
@@ -118,7 +118,7 @@ class RunDb:
         # The main purpose of task is to ensure that the schemas
         # in schemas.py are kept up-to-date.
         print(
-            "Validate_data_structures: validating Fishtest's internal data structures...",
+            "Validate_data_structures: validating Montytest's internal data structures...",
             flush=True,
         )
         try:
@@ -1256,7 +1256,7 @@ After fixing the issues you can unblock the worker at
         # Cache some data. Currently we record the id's
         # the worker has seen, as well as the last id that was seen.
         # Note that "worker_runs" is empty after a server restart.
-        
+
         if unique_key not in self.worker_runs:
             self.worker_runs[unique_key] = {}
         self.worker_runs[unique_key][run_id] = True

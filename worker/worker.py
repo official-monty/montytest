@@ -20,13 +20,14 @@ import threading
 import time
 import traceback
 import uuid
-import cpuinfo
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from configparser import ConfigParser
 from contextlib import ExitStack
 from datetime import datetime, timedelta, timezone
 from functools import partial
 from pathlib import Path
+
+import cpuinfo
 
 # Fall back to the provided packages if missing in the local system.
 
@@ -1029,7 +1030,7 @@ def cargo_version():
         ) as p:
             for line in iter(p.stdout.readline, ""):
                 if "cargo" in line:
-                    ver = line.split(' ')[1].split('.')
+                    ver = line.split(" ")[1].split(".")
                     major = ver[0]
                     minor = ver[1]
                     patchlevel = ver[2]
@@ -1549,17 +1550,17 @@ def worker():
 
     compiler, major, minor, patchlevel = options.compiler
     print("Using {} {}.{}.{}".format(compiler, major, minor, patchlevel))
-        
+
     try:
         brand = cpuinfo.get_cpu_info()["brand_raw"]
     except:
         brand = "?"
-        
+
     try:
         freq = cpuinfo.get_cpu_info()["hz_actual_friendly"]
     except:
         freq = ""
-        
+
     cpu = "{} {}".format(brand, freq)
 
     uname = platform.uname()

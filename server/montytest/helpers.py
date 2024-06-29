@@ -2,9 +2,7 @@ from montytest.util import get_hash, get_tc_ratio
 
 
 def tests_repo(run):
-    return run["args"].get(
-        "tests_repo", "https://github.com/official-monty/Monty"
-    )
+    return run["args"].get("tests_repo", "https://github.com/official-monty/Monty")
 
 
 def master_diff_url(run):

@@ -1,4 +1,4 @@
-# This file describes some of the data structures used by Fishtest so that they
+# This file describes some of the data structures used by Montytest so that they
 # can be statically validated before they are processed further or written
 # to the database.
 #

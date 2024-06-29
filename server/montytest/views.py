@@ -1228,9 +1228,7 @@ def tests_run(request):
 
     username = request.authenticated_userid
     u = request.userdb.get_user(username)
-    master_commits_url = (
-        "https://api.github.com/repos/official-monty/Monty/commits"
-    )
+    master_commits_url = "https://api.github.com/repos/official-monty/Monty/commits"
     return {
         "args": run_args,
         "is_rerun": len(run_args) > 0,
@@ -1416,7 +1414,7 @@ def tests_delete(request):
             validate(runs_schema, run, "run")
         except ValidationError as e:
             message = (
-                f"The run object {request.POST["run-id"]} does not validate: {str(e)}"
+                f"The run object {request.POST['run-id']} does not validate: {str(e)}"
             )
             print(message, flush=True)
             if "version" in run and run["version"] >= RUN_VERSION:
