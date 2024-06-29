@@ -1228,9 +1228,7 @@ def tests_run(request):
 
     username = request.authenticated_userid
     u = request.userdb.get_user(username)
-    master_commits_url = (
-        "https://api.github.com/repos/official-monty/Monty/commits"
-    )
+    master_commits_url = "https://api.github.com/repos/official-monty/Monty/commits"
     return {
         "args": run_args,
         "is_rerun": len(run_args) > 0,
