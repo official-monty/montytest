@@ -118,7 +118,7 @@ class RunDb:
         # The main purpose of task is to ensure that the schemas
         # in schemas.py are kept up-to-date.
         print(
-            "Validate_data_structures: validating Fishtest's internal data structures...",
+            "Validate_data_structures: validating Montytest's internal data structures...",
             flush=True,
         )
         try:
