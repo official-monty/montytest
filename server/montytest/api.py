@@ -614,9 +614,7 @@ class UserApi(GenericApi):
         else:
             self.request.rundb.increment_nn_downloads(self.request.matchdict["id"])
 
-        return HTTPFound(
-            "https://montychess.org/nn/" + self.request.matchdict["id"]
-        )
+        return HTTPFound("https://montychess.org/nn/" + self.request.matchdict["id"])
 
 
 class InternalApi(GenericApi):

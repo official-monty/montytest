@@ -336,7 +336,7 @@ def run_single_bench(engine, queue):
 
         for line in iter(p.stdout.readline, ""):
             if "Bench: " in line:
-                spl = line.split(' ')
+                spl = line.split(" ")
                 bench_sig = int(spl[1].strip())
                 bench_nps = float(spl[3].strip())
 
@@ -352,7 +352,8 @@ def verify_signature(engine, signature, active_cores):
         multiprocessing.Process(
             target=run_single_bench,
             args=(engine, queue),
-        ) for _ in range(active_cores)
+        )
+        for _ in range(active_cores)
     ]
 
     for p in processes:
@@ -401,9 +402,7 @@ def download_from_github_api(
     return b64decode(requests_get(git_url, timeout=HTTP_TIMEOUT).json()["content"])
 
 
-def download_from_github(
-    item, owner="official-monty", repo="books", branch="master"
-):
+def download_from_github(item, owner="official-monty", repo="books", branch="master"):
     try:
         blob = download_from_github_raw(item, owner=owner, repo=repo, branch=branch)
     except FatalException:
@@ -446,9 +445,7 @@ def convert_book_move_counters(book_file):
             file.write(epd + "\n")
 
 
-def setup_engine(
-    destination, worker_dir, testing_dir, remote, sha, repo_url
-):
+def setup_engine(destination, worker_dir, testing_dir, remote, sha, repo_url):
     """Download and build sources in a temporary directory then move exe to destination"""
     tmp_dir = Path(tempfile.mkdtemp(dir=worker_dir))
 
@@ -470,11 +467,7 @@ def setup_engine(
         establish_validated_net(remote, testing_dir, policyfile)
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
-        cmd = [
-            "make",
-            "montytest",
-            f"EXE={destination}"
-        ]
+        cmd = ["make", "montytest", f"EXE={destination}"]
 
         if os.path.exists(destination):
             raise FatalException("Another worker is running in the same directory!")
@@ -849,21 +842,25 @@ def launch_cutechess(
     # Stochastic rounding and probability for float N.p: (N, 1-p); (N+1, p)
     idx = cmd.index("_spsa_")
     cmd = (
-        cmd[:idx] + [
+        cmd[:idx]
+        + [
             "option.{}={}".format(
                 x["name"], math.floor(x["value"] + random.uniform(0, 1))
             )
             for x in w_params
-        ] + cmd[idx + 1:]
+        ]
+        + cmd[idx + 1 :]
     )
     idx = cmd.index("_spsa_")
     cmd = (
-        cmd[:idx] + [
+        cmd[:idx]
+        + [
             "option.{}={}".format(
                 x["name"], math.floor(x["value"] + random.uniform(0, 1))
             )
             for x in b_params
-        ] + cmd[idx + 1:]
+        ]
+        + cmd[idx + 1 :]
     )
 
     #    print(cmd)
@@ -1144,7 +1141,7 @@ def run_games(
                 base_nps
             )
         )
-    
+
     # Value from running bench on 32 processes on Ryzen 9 7950X
     # also set in rundb.py and delta_update_users.py
     factor = 184087 / base_nps
