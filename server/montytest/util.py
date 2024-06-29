@@ -344,7 +344,7 @@ def estimate_game_duration(tc):
     return (time_tc + (increment * game_moves)) * scale
 
 
-def get_tc_ratio(tc, threads=1, base="10+0.1"):
+def get_tc_ratio(tc, threads=1, base="20+0.2"):
     """Get TC ratio relative to the `base`, which defaults to standard STC.
     Example: standard LTC is 6x, SMP-STC is 4x."""
     return threads * estimate_game_duration(tc) / estimate_game_duration(base)

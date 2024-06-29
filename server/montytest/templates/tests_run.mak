@@ -15,7 +15,7 @@
   pt_branch = pt_info["pt_branch"]
   pt_signature = pt_info["pt_bench"]
 
-  tc = args.get('tc', '10+0.1')
+  tc = args.get('tc', '20+0.2')
   new_tc = args.get('new_tc', tc)
 
   default_book = args.get('book', test_book)
@@ -281,7 +281,7 @@
                   name="new-options"
                   id="new-options"
                   class="form-control"
-                  value="${args.get('new_options', 'Hash=16')}"
+                  value="${args.get('new_options', 'Hash=32')}"
                 >
               </div>
 
@@ -292,7 +292,7 @@
                   name="base-options"
                   id="base-options"
                   class="form-control"
-                  value="${args.get('base_options', 'Hash=16')}"
+                  value="${args.get('base_options', 'Hash=32')}"
                 >
               </div>
 
@@ -543,7 +543,7 @@
                     name="tc"
                     id="tc"
                     class="form-control"
-                    value="${args.get('tc', '10+0.1')}"
+                    value="${args.get('tc', '20+0.2')}"
                   >
                 </div>
                 <div class="col mb-2 new_tc" style="display: none;">
@@ -553,7 +553,7 @@
                     name="new_tc"
                     id="new_tc"
                     class="form-control"
-                    value="${args.get('new_tc', '10+0.1')}"
+                    value="${args.get('new_tc', '20+0.2')}"
                   >
                 </div>
                 <div class="col mb-2">
@@ -691,10 +691,10 @@
   let stopRule = null;
 
   const presetBounds = {
-    'standard STC': [ 0.0, 2.0],
-    'standard LTC': [ 0.5, 2.5],
-    'regression STC': [-1.75, 0.25],
-    'regression LTC': [-1.75, 0.25],
+    'standard STC': [ 0.0, 4.0],
+    'standard LTC': [ 1.0, 5.0],
+    'regression STC': [-3.5, 0.5],
+    'regression LTC': [-3.5, 0.5],
   };
 
   const isRun = ${'true' if is_rerun else 'false'};
@@ -923,22 +923,22 @@
   if (isRun) {
     // Select the correct fields by default for re-runs
     const tc = '${args.get('tc')}';
-    if (tc === "10+0.1") {
+    if (tc === "20+0.2") {
       document.getElementById("stc_test").checked = true;
-    } else if (tc === "5+0.05") {
+    } else if (tc === "6+0.06") {
       document.getElementById("stc_smp_test").checked = true;
-    } else if (tc === "20+0.2") {
+    } else if (tc === "24+0.24") {
       document.getElementById("ltc_smp_test").checked = true;
-    } else if (tc === "180+1.8") {
-      document.getElementById("vltc_test").checked = true;
+    } else if (tc === "200+2") {
+      document.getElementById("vltc_smp_test").checked = true;
     }
 
     const threads = '${args.get('threads')}';
-    if (tc === "60+0.6") {
+    if (tc === "120+1.2") {
       if (threads === "1") {
         document.getElementById("ltc_test").checked = true;
-      } else if (threads === "8") {
-        document.getElementById("vltc_smp_test").checked = true;
+      } else if (threads === "3") {
+        document.getElementById("vltc_test").checked = true;
       }
     }
 
