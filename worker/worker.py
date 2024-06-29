@@ -20,13 +20,14 @@ import threading
 import time
 import traceback
 import uuid
-import cpuinfo
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from configparser import ConfigParser
 from contextlib import ExitStack
 from datetime import datetime, timedelta, timezone
 from functools import partial
 from pathlib import Path
+
+import cpuinfo
 
 # Fall back to the provided packages if missing in the local system.
 
