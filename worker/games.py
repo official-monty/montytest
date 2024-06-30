@@ -447,7 +447,9 @@ def convert_book_move_counters(book_file):
             file.write(epd + "\n")
 
 
-def setup_engine(destination, worker_dir, testing_dir, remote, sha, repo_url, datagen=False):
+def setup_engine(
+    destination, worker_dir, testing_dir, remote, sha, repo_url, datagen=False
+):
     """Download and build sources in a temporary directory then move exe to destination"""
     tmp_dir = Path(tempfile.mkdtemp(dir=worker_dir))
 
@@ -925,7 +927,14 @@ def launch_cutechess(
 
 
 def run_games(
-    worker_info, current_state, password, remote, run, task_id, games_file, clear_binaries
+    worker_info,
+    current_state,
+    password,
+    remote,
+    run,
+    task_id,
+    games_file,
+    clear_binaries,
 ):
     # This is the main cutechess-cli driver.
     # It is ok, and even expected, for this function to
@@ -1342,7 +1351,7 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
         if "finished games" in line:
             # Parsing sometimes fails. We want to understand why.
             try:
-                chunks = line.split(' ')
+                chunks = line.split(" ")
                 wld = [int(chunks[0]), int(chunks[2]), int(chunks[4])]
             except:
                 raise WorkerException("Failed to parse score line: {}".format(line))
@@ -1358,9 +1367,7 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
     update_succeeded = False
     for _ in range(5):
         try:
-            response = send_api_post_request(
-                remote + "/api/update_task", result
-            )
+            response = send_api_post_request(remote + "/api/update_task", result)
             if "error" in response:
                 break
         except Exception as e:
@@ -1392,7 +1399,16 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
 
 
 def run_datagen_games(
-    games_file, book, threads, games_stc, run, remote, key, result, current_state, tc_limit
+    games_file,
+    book,
+    threads,
+    games_stc,
+    run,
+    remote,
+    key,
+    result,
+    current_state,
+    tc_limit,
 ):
     sha_new = run["args"]["resolved_new"]
     new_engine_name = "monty_datagen_" + sha_new

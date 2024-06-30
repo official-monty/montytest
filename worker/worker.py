@@ -1436,7 +1436,10 @@ def fetch_and_handle_task(
                     req = send_api_post_request(remote + "/api/upload_vtd", payload)
                 except Exception as e:
                     print(
-                        "\nException uploading binpack file:\n", e, sep="", file=sys.stderr
+                        "\nException uploading binpack file:\n",
+                        e,
+                        sep="",
+                        file=sys.stderr,
                     )
             if "spsa" not in run["args"]:
                 try:
