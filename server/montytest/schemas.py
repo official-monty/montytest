@@ -695,6 +695,7 @@ runs_schema = intersect(
                 "itp": unumber,
                 "priority": number,
                 "adjudication": bool,
+                "datagen": bool,
                 "sprt?": intersect(
                     {
                         "alpha": 0.05,

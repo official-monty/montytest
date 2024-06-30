@@ -39,6 +39,7 @@ run_default = {
         "itp": 100.0,
         "priority": 0,
         "adjudication": True,
+        "datagen": False,
     },
     "start_time": datetime.min,
     "last_updated": datetime.min,

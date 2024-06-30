@@ -994,6 +994,8 @@ def validate_form(request):
     # checkbox is to _disable_ adjudication
     data["adjudication"] = request.POST.get("adjudication") is None
 
+    data["datagen"] = request.POST.get("datagen") is not None
+
     # In case of reschedule use old data,
     # otherwise resolve sha and update user's tests_repo
     if "resolved_base" in request.POST:
