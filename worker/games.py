@@ -1352,7 +1352,7 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
             # Parsing sometimes fails. We want to understand why.
             try:
                 chunks = line.split(" ")
-                wld = [int(chunks[0]), int(chunks[2]), int(chunks[4])]
+                wld = [int(chunks[8]), int(chunks[4]), int(chunks[6])]
             except:
                 raise WorkerException("Failed to parse score line: {}".format(line))
     else:
@@ -1360,9 +1360,9 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
             "{} is past end time {}".format(datetime.now(timezone.utc), end_time)
         )
 
-    result["stats"]["wins"] = wld["wins"] + saved_stats["wins"]
-    result["stats"]["losses"] = wld["losses"] + saved_stats["losses"]
-    result["stats"]["draws"] = wld["draws"] + saved_stats["draws"]
+    result["stats"]["wins"] = wld[0] + saved_stats["wins"]
+    result["stats"]["losses"] = wld[1] + saved_stats["losses"]
+    result["stats"]["draws"] = wld[2] + saved_stats["draws"]
 
     update_succeeded = False
     for _ in range(5):
