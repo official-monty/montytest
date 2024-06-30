@@ -170,6 +170,7 @@ def main(global_config, **settings):
     config.add_route("api_get_run", "/api/get_run/{id}")
     config.add_route("api_get_task", "/api/get_task/{id}/{task_id}")
     config.add_route("api_upload_pgn", "/api/upload_pgn")
+    config.add_route("api_upload_vtd", "/api/upload_vtd")
     config.add_route("api_download_pgn", "/api/pgn/{id}")
     config.add_route("api_download_run_pgns", "/api/run_pgns/{id}")
     config.add_route("api_download_nn", "/api/nn/{id}")

@@ -273,6 +273,20 @@ class WorkerApi(GenericApi):
         )
         return self.add_time(result)
 
+    @view_config(route_name="api_upload_vtd")
+    def upload_vtd(self):
+        self.validate_request()
+        try:
+            vtd_zip = base64.b64decode(self.vtd())
+            validate(gzip_data, vtd_zip, "vtd")
+        except Exception as e:
+            self.handle_error(str(e))
+        result = self.request.rundb.upload_vtd(
+            run_id="{}-{}".format(self.run_id(), self.task_id()),
+            vtd_zip=vtd_zip,
+        )
+        return self.add_time(result)
+
     @view_config(route_name="api_stop_run")
     def stop_run(self):
         self.validate_request()
