@@ -68,6 +68,7 @@ class RunDb:
         self.actiondb = ActionDb(self.db)
         self.workerdb = WorkerDb(self.db)
         self.pgndb = self.db["pgns"]
+        self.vtddb = self.db["value_training_data"]
         self.nndb = self.db["nns"]
         self.runs = self.db["runs"]
         self.deltas = self.db["deltas"]
@@ -592,6 +593,13 @@ class RunDb:
             record,
         )
         return {}
+
+    def upload_value_data(self, run_id, vtd_zip):
+        record = {"run_id": run_id, "vtd_zip": Binary(vtd_zip), "size": len(vtd_zip)}
+
+        self.vtddb.insert_one(record)
+
+        return
 
     def get_pgn(self, run_id):
         pgn = self.pgndb.find_one({"run_id": run_id})
