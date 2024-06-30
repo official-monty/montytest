@@ -601,6 +601,31 @@ class RunDb:
 
         return
 
+    def get_vtd(self, run_id):
+        vtd = self.vtddb.find_one({"run_id": run_id})
+        return (vtd["vtd_zip"], vtd["size"]) if vtd else (None, 0)
+
+    def get_run_vtds(self, run_id):
+        # Compute the total size using MongoDB's aggregation framework
+        vtds_query = {"run_id": {"$regex": f"^{run_id}-\\d+"}}
+        total_size_agg = self.vtddb.aggregate(
+            [
+                {"$match": vtds_query},
+                {"$project": {"size": 1, "_id": 0}},
+                {"$group": {"_id": None, "totalSize": {"$sum": "$size"}}},
+            ]
+        )
+        total_size = total_size_agg.next()["totalSize"] if total_size_agg.alive else 0
+
+        if total_size > 0:
+            # Create a file reader from a generator that yields each pgn.gz file
+            vtds = self.vtddb.find(vtds_query, {"vtd_zip": 1, "_id": 0})
+            vtds_reader = GeneratorAsFileReader(vtd["vtd_zip"] for vtd in vtds)
+        else:
+            vtds_reader = None
+
+        return vtds_reader, total_size
+
     def get_pgn(self, run_id):
         pgn = self.pgndb.find_one({"run_id": run_id})
         return (pgn["pgn_zip"], pgn["size"]) if pgn else (None, 0)

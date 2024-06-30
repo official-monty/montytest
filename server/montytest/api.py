@@ -192,6 +192,12 @@ class WorkerApi(GenericApi):
 
         self.handle_error("Missing pgn content")
 
+    def vtd(self):
+        if "vtd" in self.request_body:
+            return self.request_body["vtd"]
+
+        self.handle_error("Missing vtd content")
+
     def worker_info(self):
         worker_info = self.request_body["worker_info"]
         worker_info["remote_addr"] = self.request.remote_addr
@@ -614,6 +620,38 @@ class UserApi(GenericApi):
         response = Response(content_type="application/gzip")
         response.app_iter = FileIter(pgns_reader)
         response.headers["Content-Disposition"] = f'attachment; filename="{pgns_name}"'
+        response.headers["Content-Length"] = str(total_size)
+        return response
+
+    @view_config(route_name="api_download_vtd", renderer="string")
+    def download_vtd(self):
+        zip_name = self.request.matchdict["id"]
+        run_id = zip_name.split(".")[0]
+        vtd_zip, size = self.request.rundb.get_vtd(run_id)
+        if vtd_zip is None:
+            self.handle_error(f"No data found for {zip_name}", exception=HTTPNotFound)
+        response = Response(content_type="application/gzip")
+        response.app_iter = io.BytesIO(vtd_zip)
+        response.headers["Content-Disposition"] = f'attachment; filename="{zip_name}"'
+        response.headers["Content-Encoding"] = "gzip"
+        response.headers["Content-Length"] = str(size)
+        return response
+
+    @view_config(route_name="api_download_run_vtds")
+    def download_run_vtds(self):
+        vtds_name = self.request.matchdict["id"]
+        match = re.match(r"^([a-zA-Z0-9]+)\.binpack\.gz$", vtds_name)
+        if not match:
+            self.handle_error(
+                f"Invalid filename format for {vtds_name}", exception=HTTPBadRequest
+            )
+        run_id = match.group(1)
+        vtds_reader, total_size = self.request.rundb.get_runvtdns(run_id)
+        if vtds_reader is None:
+            self.handle_error(f"No data found for {vtds_name}", exception=HTTPNotFound)
+        response = Response(content_type="application/gzip")
+        response.app_iter = FileIter(vtds_reader)
+        response.headers["Content-Disposition"] = f'attachment; filename="{vtds_name}"'
         response.headers["Content-Length"] = str(total_size)
         return response
 

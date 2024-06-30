@@ -173,6 +173,8 @@ def main(global_config, **settings):
     config.add_route("api_upload_vtd", "/api/upload_vtd")
     config.add_route("api_download_pgn", "/api/pgn/{id}")
     config.add_route("api_download_run_pgns", "/api/run_pgns/{id}")
+    config.add_route("api_download_vtd", "/api/vtd/{id}")
+    config.add_route("api_download_run_vtds", "/api/run_vtds/{id}")
     config.add_route("api_download_nn", "/api/nn/{id}")
     config.add_route("api_get_elo", "/api/get_elo/{id}")
     config.add_route("api_actions", "/api/actions")
