@@ -454,6 +454,7 @@ class RunDb:
         throughput=100,
         priority=0,
         adjudication=True,
+        datagen=False,
     ):
         if start_time is None:
             start_time = datetime.now(timezone.utc)
@@ -487,6 +488,7 @@ class RunDb:
             "itp": 100,  # internal throughput
             "priority": priority,
             "adjudication": adjudication,
+            "datagen": datagen,
         }
 
         if sprt is not None:

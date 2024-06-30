@@ -653,6 +653,18 @@
                     >
                   </div>
                 </div>
+				<div class="col text-nowrap">
+                  <div class="mb-2 form-check">
+                    <label class="form-check-label" for="checkbox-datagen">Datagen</label>
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="checkbox-datagen"
+                      name="datagen"
+                      ${'checked' if args.get("datagen", True) else ''}
+                    >
+                  </div>
+				</div>
               </div>
             </div>
           </div>
@@ -761,6 +773,7 @@
           base_branch,
           test_signature,
           base_signature,
+		  datagen,
         } = JSON.parse(testOptions);
         document.getElementById("tc").value = tc;
         document.getElementById("new_tc").value = new_tc;
