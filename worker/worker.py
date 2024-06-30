@@ -27,13 +27,11 @@ from datetime import datetime, timedelta, timezone
 from functools import partial
 from pathlib import Path
 
-import cpuinfo
-
 # Fall back to the provided packages if missing in the local system.
-
 packages_dir = Path(__file__).resolve().parent / "packages"
 sys.path.append(str(packages_dir))
 
+import cpuinfo
 import requests
 from games import (
     EXE_SUFFIX,
