@@ -401,7 +401,7 @@
                     name="sprt_elo1"
                     id="sprt_elo1"
                     class="form-control"
-                    value="${args.get('sprt', {'elo1': 2.0})['elo1']}"
+                    value="${args.get('sprt', {'elo1': 4.0})['elo1']}"
                   >
                 </div>
               </div>
