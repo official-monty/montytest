@@ -29,7 +29,7 @@ def ok_hash(tc_ratio, hash):
             True  # MTC and STC are assumed fine, could be handled if we really want to
         )
     # tc_ratio 6 has has 64 MB, and linearly for all above
-    target_hash = 64 * tc_ratio / 6
+    target_hash = 128 * tc_ratio / 6
     return 0.6 <= hash / target_hash <= 1.5
 
 
