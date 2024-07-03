@@ -78,6 +78,11 @@ def create_pgns_indexes():
     db["pgns"].create_index([("run_id", DESCENDING)])
 
 
+def create_vtd_indexes():
+    print("Creating indexes on vtd collection")
+    db["vtd"].create_index([("run_id", DESCENDING)])
+
+
 def create_nns_indexes():
     print("Creating indexes on nns collection")
     db["nns"].create_index([("name", DESCENDING)])
@@ -155,6 +160,9 @@ if __name__ == "__main__":
             elif collection_name == "pgns":
                 drop_indexes("pgns")
                 create_pgns_indexes()
+            elif collection_name == "vtd":
+                drop_indexes("vtd")
+                create_vtd_indexes()
             elif collection_name == "nns":
                 drop_indexes("nns")
                 create_nns_indexes()

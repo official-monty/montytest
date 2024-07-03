@@ -6,6 +6,6 @@ conn = MongoClient("localhost")
 
 db = conn["montytest_new"]
 
-db.drop_collection("value_training_data")
+db.drop_collection("vtd")
 
-db.create_collection("value_training_data", capped=False)
+db.create_collection("vtd", capped=False)

@@ -68,7 +68,7 @@ class RunDb:
         self.actiondb = ActionDb(self.db)
         self.workerdb = WorkerDb(self.db)
         self.pgndb = self.db["pgns"]
-        self.vtddb = self.db["value_training_data"]
+        self.vtddb = self.db["vtd"]
         self.nndb = self.db["nns"]
         self.runs = self.db["runs"]
         self.deltas = self.db["deltas"]
