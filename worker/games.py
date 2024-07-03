@@ -1333,7 +1333,7 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
     t_error = threading.Thread(target=enqueue_output, args=(p.stderr, q), daemon=True)
     t_error.start()
 
-    end_time = datetime.now(timezone.utc) + timedelta(seconds=tc_limit)
+    end_time = datetime.now(timezone.utc) + timedelta(seconds=50 * tc_limit)
     print("TC limit {} End time: {}".format(tc_limit, end_time))
 
     while datetime.now(timezone.utc) < end_time:
