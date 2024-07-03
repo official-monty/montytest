@@ -1363,6 +1363,8 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
     result["stats"]["losses"] = wld[1] + saved_stats["losses"]
     result["stats"]["draws"] = wld[2] + saved_stats["draws"]
 
+    result["stats"]["pentanomial"][2] = sum(wld) / 2
+
     update_succeeded = False
     for _ in range(5):
         try:
