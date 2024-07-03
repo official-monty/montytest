@@ -1444,7 +1444,7 @@ def run_datagen_games(
     except WorkerException as e:
         raise e
 
-    tc_limit = adjust_tc("8+0.08", BASELINE_NPS / nps)
+    _, tc_limit = adjust_tc("8+0.08", BASELINE_NPS / nps)
 
     # Handle exceptions if any.
     if run_errors:
