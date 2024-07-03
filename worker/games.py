@@ -1474,7 +1474,7 @@ def run_datagen_games(
 
     if book is not None and book.endswith(".epd"):
         cmd.append("-b")
-        cmd.append("book")
+        cmd.append(book)
 
     try:
         with subprocess.Popen(
