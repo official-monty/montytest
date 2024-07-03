@@ -1467,9 +1467,9 @@ def run_datagen_games(
         "-n",
         "5000",
         "-t",
-        threads,
+        str(threads),
         "-g",
-        games,
+        str(games),
     ]
 
     if book is not None and book.endswith(".epd"):
