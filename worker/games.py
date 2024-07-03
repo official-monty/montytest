@@ -471,7 +471,7 @@ def setup_engine(
         establish_validated_net(remote, testing_dir, policyfile)
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
-        cmd = ["make", "montytest", f"EXE={destination}"]
+        cmd = ["make", "gen" if datagen else "montytest", f"EXE={destination}"]
 
         if os.path.exists(destination):
             raise FatalException("Another worker is running in the same directory!")
