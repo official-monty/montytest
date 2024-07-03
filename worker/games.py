@@ -1006,7 +1006,6 @@ def run_games(
             worker_info["unique_key"],
             result,
             current_state,
-            tc_limit,
         )
         return
 
@@ -1408,7 +1407,6 @@ def run_datagen_games(
     key,
     result,
     current_state,
-    tc_limit,
 ):
     sha_new = run["args"]["resolved_new"]
     new_engine_name = "monty_datagen_" + sha_new
@@ -1436,7 +1434,7 @@ def run_datagen_games(
     # Verify that the signatures are correct.
     run_errors = []
     try:
-        verify_signature(
+        nps = verify_signature(
             new_engine,
             run["args"]["base_signature"],
             threads,
@@ -1445,6 +1443,8 @@ def run_datagen_games(
         run_errors.append(str(e))
     except WorkerException as e:
         raise e
+
+    tc_limit = adjust_tc("8+0.08", BASELINE_NPS / nps)
 
     # Handle exceptions if any.
     if run_errors:
