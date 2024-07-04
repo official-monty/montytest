@@ -447,6 +447,7 @@ api_schema = intersect(
         "run_id?": run_id,
         "task_id?": task_id,
         "pgn?": str,
+        "vtd?": str,
         "message?": str,
         "worker_info": worker_info_schema_api,
         "spsa?": intersect(
