@@ -1426,7 +1426,7 @@ def fetch_and_handle_task(
                             mode="wb",
                             fileobj=gz_buffer,
                         ) as gz:
-                            gz.write(data.encode())
+                            gz.write(data)
                         payload["vtd"] = base64.b64encode(gz_buffer.getvalue()).decode()
                     print(
                         "Uploading compressed binpack of {} bytes".format(
@@ -1441,7 +1441,7 @@ def fetch_and_handle_task(
                         sep="",
                         file=sys.stderr,
                     )
-            if "spsa" not in run["args"]:
+            elif "spsa" not in run["args"]:
                 try:
                     # Ignore non utf-8 characters in PGN file.
                     data = games_file.read_text(encoding="utf-8", errors="ignore")

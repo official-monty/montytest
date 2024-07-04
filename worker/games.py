@@ -1363,7 +1363,17 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
     result["stats"]["losses"] = wld[1] + saved_stats["losses"]
     result["stats"]["draws"] = wld[2] + saved_stats["draws"]
 
-    result["stats"]["pentanomial"][2] = sum(wld) / 2
+    wins = result["stats"]["wins"]
+    draws = result["stats"]["draws"]
+    losses = result["stats"]["losses"]
+
+    winLossDiff = wins - losses
+
+    result["stats"]["pentanomial"][1] = max(-winLossDiff, 0)
+    result["stats"]["pentanomial"][2] = int(
+        (wins + draws + losses) / 2 - abs(winLossDiff)
+    )
+    result["stats"]["pentanomial"][3] = max(winLossDiff, 0)
 
     update_succeeded = False
     for _ in range(5):
@@ -1433,6 +1443,17 @@ def run_datagen_games(
 
     os.chdir(testing_dir)
 
+    # Download the opening book if missing in the directory.
+    if not (testing_dir / book).exists() or (testing_dir / book).stat().st_size == 0:
+        zipball = book + ".zip"
+        blob = download_from_github(zipball)
+        unzip(blob, testing_dir)
+
+    # convert .epd containing FENs into .epd containing EPDs with move counters
+    # only needed as long as cutechess-cli is the game manager
+    if book.endswith(".epd"):
+        convert_book_move_counters(testing_dir / book)
+
     # Verify that the signatures are correct.
     run_errors = []
     try:
@@ -1460,7 +1481,7 @@ def run_datagen_games(
     except FileNotFoundError:
         pass
 
-    games = 10 * games_stc
+    games = games_stc
 
     cmd = [
         new_engine_name,
