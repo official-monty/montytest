@@ -283,7 +283,7 @@ class WorkerApi(GenericApi):
     def upload_vtd(self):
         self.validate_request()
         try:
-            vtd_zip = base64.b64decode(self.vtd())
+            vtd_zip = self.vtd()
         except Exception as e:
             self.handle_error(str(e))
         result = self.request.rundb.upload_vtd(
