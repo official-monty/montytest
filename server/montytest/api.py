@@ -630,7 +630,7 @@ class UserApi(GenericApi):
         if vtd_zip is None:
             self.handle_error(f"No data found for {zip_name}", exception=HTTPNotFound)
         response = Response(content_type="application/gzip")
-        response.app_iter = io.BytesIO(vtd_zip)
+        response.app_iter = io.BytesIO(vtd_zip.encode())
         response.headers["Content-Disposition"] = f'attachment; filename="{zip_name}"'
         response.headers["Content-Encoding"] = "gzip"
         response.headers["Content-Length"] = str(size)
