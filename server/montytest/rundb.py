@@ -594,7 +594,7 @@ class RunDb:
         )
         return {}
 
-    def upload_value_data(self, run_id, vtd_zip):
+    def upload_vtd(self, run_id, vtd_zip):
         record = {"run_id": run_id, "vtd_zip": vtd_zip, "size": len(vtd_zip)}
 
         self.vtddb.insert_one(record)
