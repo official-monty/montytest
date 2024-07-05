@@ -599,7 +599,7 @@ class RunDb:
 
         self.vtddb.insert_one(record)
 
-        return
+        return {}
 
     def get_vtd(self, run_id):
         vtd = self.vtddb.find_one({"run_id": run_id})
