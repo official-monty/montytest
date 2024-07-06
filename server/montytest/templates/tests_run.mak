@@ -857,6 +857,31 @@
       
       if (!isRun) {
           if (isDatagen) {
+            // Grey out more things
+            document.getElementById("checkbox-auto-purge").disabled = true;
+            document.getElementById("checkbox-time-odds").disabled = true;
+            document.getElementById("checkbox-adjudication").disabled = true;
+
+            document.querySelector('label[for="checkbox-auto-purge"]').classList.add('disabled');
+            document.querySelector('label[for="checkbox-time-odds"]').classList.add('disabled');
+            document.querySelector('label[for="checkbox-adjudication"]').classList.add('disabled');
+
+            document.getElementById("threads").value = "";
+            document.getElementById("threads").readOnly = true;
+            document.getElementById("new-options").value = "";
+            document.getElementById("new-options").readOnly = true;
+            document.getElementById("base-options").value = "";
+            document.getElementById("base-options").readOnly = true;
+
+            document.getElementById("stc_test").readOnly = true;
+            document.getElementById("ltc_test").readOnly = true;
+            document.getElementById("stc_smp_test").readOnly = true;
+            document.getElementById("ltc_smp_test").readOnly = true;
+            document.getElementById("vltc_test").readOnly = true;
+            document.getElementById("vltc_smp_test").readOnly = true;
+            document.getElementById("pt_test").readOnly = true;
+            document.getElementById("pt_smp_test").readOnly = true;
+
             // base branch and test branch should be the same for SPSA tests
             document.getElementById("base-branch").readOnly = true;
             document.getElementById("base-branch").value = document.getElementById("test-branch").value;
