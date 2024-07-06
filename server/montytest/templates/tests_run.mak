@@ -653,18 +653,20 @@
                     >
                   </div>
                 </div>
-				<div class="col text-nowrap">
-                  <div class="mb-2 form-check">
-                    <label class="form-check-label" for="checkbox-datagen">Datagen</label>
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      id="checkbox-datagen"
-                      name="datagen"
-                      ${'checked' if args.get("datagen", True) else ''}
-                    >
-                  </div>
-				</div>
+                <div class="mb-2 stop-rule stop-rule-games">
+				    <div class="col text-nowrap">
+                      <div class="mb-2 form-check">
+                        <label class="form-check-label" for="checkbox-datagen">Datagen</label>
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="checkbox-datagen"
+                          name="datagen"
+                          ${'checked' if args.get("datagen", False) else ''}
+                        >
+                      </div>
+				    </div>
+                </div>
               </div>
             </div>
           </div>
