@@ -645,7 +645,7 @@ class UserApi(GenericApi):
                 f"Invalid filename format for {vtds_name}", exception=HTTPBadRequest
             )
         run_id = match.group(1)
-        vtds_reader, total_size = self.request.rundb.get_runvtdns(run_id)
+        vtds_reader, total_size = self.request.rundb.get_run_vtds(run_id)
         if vtds_reader is None:
             self.handle_error(f"No data found for {vtds_name}", exception=HTTPNotFound)
         response = Response(content_type="application/gzip")
