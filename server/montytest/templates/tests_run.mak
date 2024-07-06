@@ -891,7 +891,6 @@
   document.querySelectorAll("[name=stop-rule]").forEach((btn) =>
     btn.addEventListener("click", function () {
       stopRule = btn.value;
-
       if (stopRule) {
         // Hide all elements that have the class "stop-rule"
         document
@@ -937,6 +936,13 @@
           updateSprtBounds(document.getElementById("bounds").value);
         }
       }
+
+      if (stopRule === "stop-rule-games") {
+          document.querySelectorAll("[name=datagen]").forEach((checkbox) => {
+               checkbox.dispatchEvent(new Event('change'));
+          });
+      }
+
     })
   );
 
