@@ -703,6 +703,7 @@
   });
 
   let stopRule = null;
+  let isDatagen = null;
 
   const presetBounds = {
     'standard STC': [ 0.0, 4.0],
@@ -848,6 +849,43 @@
     document.getElementById("base-signature").value =
       document.getElementById("test-signature").value;
   }
+
+  // Datagen field is changed
+  document.querySelectorAll("[name=datagen]").forEach((checkbox) =>
+    checkbox.addEventListener("change", function () {
+      isDatagen = checkbox.checked;
+      
+      if (!isRun) {
+          if (isDatagen) {
+            // base branch and test branch should be the same for SPSA tests
+            document.getElementById("base-branch").readOnly = true;
+            document.getElementById("base-branch").value = document.getElementById("test-branch").value;
+            document
+              .getElementById("test-branch")
+              .addEventListener("input", testBranchHandler);
+            document.getElementById("base-signature").readOnly = true;
+            document.getElementById("base-signature").value = document.getElementById("test-signature").value;
+            document
+              .getElementById("test-signature")
+              .addEventListener("input", testSignatureHandler);
+            isDatagen = true;
+          } else {
+            document.getElementById("base-branch").removeAttribute("readonly");
+            document.getElementById("base-branch").value = initialBaseBranch;
+            document.getElementById("base-signature").removeAttribute("readonly");
+            document.getElementById("base-signature").value = initialBaseSignature;
+            document
+              .getElementById("test-branch")
+              .removeEventListener("input", testBranchHandler);
+            document
+              .getElementById("test-signature")
+              .removeEventListener("input", testSignatureHandler);
+            isDatagen = false;
+          }
+        }
+    })
+  ); 
+
 
   // Stop rule is changed
   document.querySelectorAll("[name=stop-rule]").forEach((btn) =>
