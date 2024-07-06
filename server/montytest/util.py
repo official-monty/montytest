@@ -24,7 +24,10 @@ class GeneratorAsFileReader:
     def read(self, size=-1):
         while size < 0 or len(self.buffer) < size:
             try:
-                self.buffer += next(self.generator)
+                chunk = next(self.generator)
+                if isinstance(chunk, str):
+                    chunk = chunk.encode('utf-8')  # Convert chunk to bytes if necessary
+                self.buffer += chunk
             except StopIteration:
                 break
         result, self.buffer = self.buffer[:size], self.buffer[size:]
