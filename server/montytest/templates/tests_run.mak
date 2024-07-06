@@ -653,7 +653,7 @@
                     >
                   </div>
                 </div>
-                <div class="mb-2 stop-rule stop-rule-games">
+                <div class="mb-2 stop-rule stop-rule-games" style="${'display: none' if (args.get('sprt') or not is_rerun) else ''}">
 				    <div class="col text-nowrap">
                       <div class="mb-2 form-check">
                         <label class="form-check-label" for="checkbox-datagen">Datagen</label>
