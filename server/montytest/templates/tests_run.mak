@@ -873,14 +873,14 @@
             document.getElementById("base-options").value = "";
             document.getElementById("base-options").readOnly = true;
 
-            document.getElementById("stc_test").readOnly = true;
-            document.getElementById("ltc_test").readOnly = true;
-            document.getElementById("stc_smp_test").readOnly = true;
-            document.getElementById("ltc_smp_test").readOnly = true;
-            document.getElementById("vltc_test").readOnly = true;
-            document.getElementById("vltc_smp_test").readOnly = true;
-            document.getElementById("pt_test").readOnly = true;
-            document.getElementById("pt_smp_test").readOnly = true;
+            document.querySelector('label[for="stc_test"]').classList.add('greyed');
+            document.querySelector('label[for="ltc_test"]').classList.add('greyed');
+            document.querySelector('label[for="stc_smp_test"]').classList.add('greyed');
+            document.querySelector('label[for="ltc_smp_test"]').classList.add('greyed');
+            document.querySelector('label[for="vltc_test"]').classList.add('greyed');
+            document.querySelector('label[for="vltc_smp_test"]').classList.add('greyed');
+            document.querySelector('label[for="pt_test"]').classList.add('greyed');
+            document.querySelector('label[for="pt_smp_test"]').classList.add('greyed');
 
             // base branch and test branch should be the same for SPSA tests
             document.getElementById("base-branch").readOnly = true;
