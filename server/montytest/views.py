@@ -898,6 +898,7 @@ def validate_form(request):
     data = {
         "base_tag": request.POST["base-branch"],
         "new_tag": request.POST["test-branch"],
+        "nodes":  request.POST["nodes"],
         "tc": request.POST["tc"],
         "new_tc": request.POST["new_tc"],
         "book": request.POST["book"],
@@ -1517,6 +1518,7 @@ def tests_view(request):
         "sprt",
         "num_games",
         "spsa",
+        "nodes",
         "tc",
         "new_tc",
         "threads",
@@ -1601,7 +1603,9 @@ def tests_view(request):
 
         if name == "spsa":
             run_args.append(("spsa", value, ""))
-        else:
+        elif run["args"]["datagen"] == False and  name != "nodes":
+            run_args.append((name, html.escape(str(value)), url))
+        elif name != "tc" or name != "new_tc":
             run_args.append((name, html.escape(str(value)), url))
 
     active = 0

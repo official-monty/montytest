@@ -546,6 +546,16 @@
                     value="${args.get('tc', '20+0.2')}"
                   >
                 </div>
+                <div class="col mb-2" style="display: none;">>
+                  <label for="nodes" class="form-label" title="Nodes">nodes</label>
+                  <input
+                    type="text"
+                    name="nodes"
+                    id="nodes"
+                    class="form-control"
+                    value="5000"
+                  >
+                </div>
                 <div class="col mb-2 new_tc" style="display: none;">
                   <label for="new_tc" class="form-label">Test TC</label>
                   <input
