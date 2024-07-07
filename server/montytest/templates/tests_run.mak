@@ -536,7 +536,7 @@
                     value="${args.get('threads', 1)}"
                   >
                 </div>
-                <div class="col mb-2">
+                <div class="col mb-2 tc">
                   <label for="tc" class="form-label" title="Time control">TC</label>
                   <input
                     type="text"
@@ -546,8 +546,8 @@
                     value="${args.get('tc', '20+0.2')}"
                   >
                 </div>
-                <div class="col mb-2" style="display: none;">>
-                  <label for="nodes" class="form-label" title="Nodes">nodes</label>
+                <div class="col mb-2 nodes" style="display: none;">
+                  <label for="nodes" class="form-label">Nodes</label>
                   <input
                     type="text"
                     name="nodes"
@@ -904,6 +904,12 @@
               .getElementById("test-signature")
               .addEventListener("input", testSignatureHandler);
             isDatagen = true;
+
+            // Swap out the TC field for the Nodes field
+            document.querySelector('.new_tc').style.display = "none";
+            document.querySelector('.tc').style.display = "none";
+            document.querySelector('.nodes').style.display = "";
+
           } else {
 
             // Ungrey out more things
