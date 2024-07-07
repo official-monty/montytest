@@ -915,11 +915,11 @@
             document.querySelector('label[for="checkbox-time-odds"]').classList.remove('disabled');
             document.querySelector('label[for="checkbox-adjudication"]').classList.remove('disabled');
 
-            document.getElementById("threads").value = "1";
+            document.getElementById("threads").value = "${args.get('threads', '1')}";
             document.getElementById("threads").readOnly = false;
-            document.getElementById("new-options").value = "Hash=32";
+            document.getElementById("new-options").value = "${args.get('new_options', 'Hash=32')}";
             document.getElementById("new-options").readOnly = false;
-            document.getElementById("base-options").value = "Hash=32";
+            document.getElementById("base-options").value = "${args.get('base_options', 'Hash=32')}";
             document.getElementById("base-options").readOnly = false;
 
             document.querySelector('label[for="stc_test"]').classList.remove('greyed');
