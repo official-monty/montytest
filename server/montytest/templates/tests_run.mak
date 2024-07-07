@@ -915,12 +915,15 @@
             document.querySelector('label[for="checkbox-time-odds"]').classList.remove('disabled');
             document.querySelector('label[for="checkbox-adjudication"]').classList.remove('disabled');
 
-            document.getElementById("threads").value = "${args.get('threads', '1')}";
-            document.getElementById("threads").readOnly = false;
-            document.getElementById("new-options").value = "${args.get('new_options', 'Hash=32')}";
-            document.getElementById("new-options").readOnly = false;
-            document.getElementById("base-options").value = "${args.get('base_options', 'Hash=32')}";
-            document.getElementById("base-options").readOnly = false;
+            if(document.getElementById("threads").readOnly)
+            {
+                document.getElementById("threads").value = "${args.get('threads', '1')}";
+                document.getElementById("threads").readOnly = false;
+                document.getElementById("new-options").value = "${args.get('new_options', 'Hash=32')}";
+                document.getElementById("new-options").readOnly = false;
+                document.getElementById("base-options").value = "${args.get('base_options', 'Hash=32')}";
+                document.getElementById("base-options").readOnly = false;
+            }
 
             document.querySelector('label[for="stc_test"]').classList.remove('greyed');
             document.querySelector('label[for="ltc_test"]').classList.remove('greyed');
@@ -998,11 +1001,12 @@
         }
       }
 
-      if (stopRule === "stop-rule-games") {
+     // if (stopRule === "stop-rule-games") {
           document.querySelectorAll("[name=datagen]").forEach((checkbox) => {
+               checkbox.checked = false;
                checkbox.dispatchEvent(new Event('change'));
           });
-      }
+     // }
 
     })
   );
