@@ -905,7 +905,7 @@
               .addEventListener("input", testSignatureHandler);
             isDatagen = true;
 
-            // Swap out the TC field for the Nodes field
+            // Swap out the TC fields for the Nodes field
             document.querySelector('.new_tc').style.display = "none";
             document.querySelector('.tc').style.display = "none";
             document.querySelector('.nodes').style.display = "";
@@ -951,6 +951,12 @@
               .getElementById("test-signature")
               .removeEventListener("input", testSignatureHandler);
             isDatagen = false;
+
+            // Swap out the nodes field for the TC field
+            document.querySelector('.tc').style.display = "";
+            document.querySelector('.nodes').style.display = "none";
+            document.getElementById('checkbox-time-odds').dispatchEvent(new Event('change'));
+
           }
         }
     })
