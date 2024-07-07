@@ -895,6 +895,32 @@
               .addEventListener("input", testSignatureHandler);
             isDatagen = true;
           } else {
+
+            // Ungrey out more things
+            document.getElementById("checkbox-auto-purge").disabled = false;
+            document.getElementById("checkbox-time-odds").disabled = false;
+            document.getElementById("checkbox-adjudication").disabled = false;
+
+            document.querySelector('label[for="checkbox-auto-purge"]').classList.remove('disabled');
+            document.querySelector('label[for="checkbox-time-odds"]').classList.remove('disabled');
+            document.querySelector('label[for="checkbox-adjudication"]').classList.remove('disabled');
+
+            document.getElementById("threads").value = "1";
+            document.getElementById("threads").readOnly = false;
+            document.getElementById("new-options").value = "Hash=32";
+            document.getElementById("new-options").readOnly = false;
+            document.getElementById("base-options").value = "Hash=32";
+            document.getElementById("base-options").readOnly = false;
+
+            document.querySelector('label[for="stc_test"]').classList.remove('greyed');
+            document.querySelector('label[for="ltc_test"]').classList.remove('greyed');
+            document.querySelector('label[for="stc_smp_test"]').classList.remove('greyed');
+            document.querySelector('label[for="ltc_smp_test"]').classList.remove('greyed');
+            document.querySelector('label[for="vltc_test"]').classList.remove('greyed');
+            document.querySelector('label[for="vltc_smp_test"]').classList.remove('greyed');
+            document.querySelector('label[for="pt_test"]').classList.remove('greyed');
+            document.querySelector('label[for="pt_smp_test"]').classList.remove('greyed');
+
             document.getElementById("base-branch").removeAttribute("readonly");
             document.getElementById("base-branch").value = initialBaseBranch;
             document.getElementById("base-signature").removeAttribute("readonly");
