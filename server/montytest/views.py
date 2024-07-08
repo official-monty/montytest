@@ -984,6 +984,11 @@ def validate_form(request):
 
     if request.POST["stop_rule"] == "spsa":
         data["base_signature"] = data["new_signature"]
+        
+    if request.POST.get("datagen") is not None:
+        data["base_options"] = "Hash=32"
+        data["new_options"] = "Hash=32"
+        data["threads"] = 1
 
     for k, v in data.items():
         if len(v) == 0:
