@@ -925,6 +925,9 @@ def validate_form(request):
     odds = request.POST.get("odds", "off")  # off checkboxes are not posted
     if odds == "off":
         data["new_tc"] = data["tc"]
+        
+    if request.POST.get("datagen") is not None and (request.POST["stop_rule"] == "spsa" or request.POST["stop_rule"] == "sprt"):
+        raise Exception("Datagen only supports fixed games tests")
 
     if not re.match(r"^([1-9]\d*/)?\d+(\.\d+)?(\+\d+(\.\d+)?)?$", data["tc"]):
         raise Exception("Bad time control format (base TC)")
