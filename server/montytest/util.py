@@ -304,8 +304,10 @@ def format_results(run_results, run):
             "Ptnml(0-2): "
             + ", ".join(str(run_results["pentanomial"][i]) for i in range(0, 5))
         )
-
-    if state == "rejected":
+ 
+    if "datagen" in run["args"] and run["args"].get('datagen', False):
+        result["style"] = "#66CCFF !important"
+    elif state == "rejected":
         if WLD[0] > WLD[1]:
             result["style"] = "yellow"
         else:
