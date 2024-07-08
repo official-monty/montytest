@@ -1427,7 +1427,7 @@ def fetch_and_handle_task(
                             fileobj=gz_buffer,
                         ) as gz:
                             gz.write(data)
-                        payload["vtd"] = base64.b64encode(gz_buffer.getvalue())
+                        payload["vtd"] = base64.b64encode(gz_buffer.getvalue()).decode()
                     print(
                         "Uploading compressed binpack of {} bytes".format(
                             len(payload["vtd"])
