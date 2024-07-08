@@ -1613,9 +1613,9 @@ def tests_view(request):
 
         if name == "spsa":
             run_args.append(("spsa", value, ""))
-        elif run["args"]["datagen"] is None and  name != "nodes":
+        elif "datagen" in run["args"] and run["args"]["datagen"] is False and  name != "nodes":
             run_args.append((name, html.escape(str(value)), url))
-        elif name != "tc" and name != "new_tc":
+        elif (name != "tc" and name != "new_tc") or "datagen" not in run["args"]:
             run_args.append((name, html.escape(str(value)), url))
 
     active = 0
