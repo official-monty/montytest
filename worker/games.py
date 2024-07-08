@@ -1323,7 +1323,7 @@ def run_games(
     return
 
 
-def parse_datagen_output(p, tc_limit, result, remote, current_state):
+def parse_datagen_output(p, tc_factor, result, remote, current_state):
     saved_stats = copy.deepcopy(result["stats"])
 
     q = Queue()
@@ -1332,7 +1332,8 @@ def parse_datagen_output(p, tc_limit, result, remote, current_state):
     t_error = threading.Thread(target=enqueue_output, args=(p.stderr, q), daemon=True)
     t_error.start()
 
-    end_time = datetime.now(timezone.utc) + timedelta(seconds=50 * tc_limit)
+    tc_limit = tc_factor * 1800 * 1.5 #Allow 50% more time before excepting
+    end_time = datetime.now(timezone.utc) + timedelta(seconds=tc_limit)
     print("TC limit {} End time: {}".format(tc_limit, end_time))
 
     while datetime.now(timezone.utc) < end_time:
@@ -1466,7 +1467,7 @@ def run_datagen_games(
     except WorkerException as e:
         raise e
 
-    _, tc_limit = adjust_tc("8+0.08", BASELINE_NPS / nps)
+    tc_factor = BASELINE_NPS / nps
 
     # Handle exceptions if any.
     if run_errors:
@@ -1519,7 +1520,7 @@ def run_datagen_games(
             close_fds=not IS_WINDOWS,
         ) as p:
             try:
-                parse_datagen_output(p, tc_limit, result, remote, current_state)
+                parse_datagen_output(p, tc_factor, result, remote, current_state)
             finally:
                 # We nicely ask cutechess-cli to stop.
                 try:
