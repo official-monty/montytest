@@ -988,11 +988,14 @@ def validate_form(request):
     if request.POST.get("datagen") is not None:
         data["base_options"] = "Hash=32"
         data["new_options"] = "Hash=32"
-        data["threads"] = 1
+        data["threads"] = "1"
 
     for k, v in data.items():
         if len(v) == 0:
             raise Exception("Missing required option: {}".format(k))
+        
+    if request.POST.get("datagen") is not None:
+        data["threads"] = 1
 
     # Handle boolean options
     data["auto_purge"] = request.POST.get("auto-purge") is not None
@@ -1063,12 +1066,14 @@ def validate_form(request):
                 ", ".join(missing_nets),
             )
         )
-
-    # Integer parameters
-    data["threads"] = int(request.POST["threads"])
+    
+    if request.POST.get("datagen") is None:
+        data["threads"] = int(request.POST["threads"])
+    else:
+        data["nodes"] = int(request.POST["nodes"])
+        
     data["priority"] = int(request.POST["priority"])
     data["throughput"] = int(request.POST["throughput"])
-    data["nodes"] = int(request.POST["nodes"])
 
     if data["threads"] <= 0:
         raise Exception("Threads must be >= 1")

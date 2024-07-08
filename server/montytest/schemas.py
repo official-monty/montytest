@@ -673,7 +673,7 @@ runs_schema = intersect(
                 "base_nets": [net_name, ...],
                 "new_nets": [net_name, ...],
                 "num_games": intersect(uint, even),
-                "nodes": bool,
+                "nodes": int,
                 "tc": tc,
                 "new_tc": tc,
                 "book": union(epd_file, pgn_file),
