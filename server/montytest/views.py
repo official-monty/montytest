@@ -898,7 +898,6 @@ def validate_form(request):
     data = {
         "base_tag": request.POST["base-branch"],
         "new_tag": request.POST["test-branch"],
-        "nodes":  request.POST["nodes"],
         "tc": request.POST["tc"],
         "new_tc": request.POST["new_tc"],
         "book": request.POST["book"],
@@ -1064,6 +1063,7 @@ def validate_form(request):
     data["threads"] = int(request.POST["threads"])
     data["priority"] = int(request.POST["priority"])
     data["throughput"] = int(request.POST["throughput"])
+    data["nodes"] = int(request.POST["nodes"])
 
     if data["threads"] <= 0:
         raise Exception("Threads must be >= 1")
@@ -1113,7 +1113,7 @@ def validate_form(request):
         if data["num_games"] <= 0:
             raise Exception("Number of games must be >= 0")
 
-    max_games = 3200000
+    max_games = 10000000
     if data["num_games"] > max_games:
         raise Exception("Number of games must be <= " + str(max_games))
 

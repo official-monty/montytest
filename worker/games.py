@@ -25,7 +25,6 @@ from zipfile import ZipFile
 import requests
 
 BASELINE_NPS = 184087
-DATAGEN_GAMES_PER_THREAD = 200
 IS_WINDOWS = "windows" in platform.system().lower()
 IS_MACOS = "darwin" in platform.system().lower()
 LOGFILE = "api.log"
@@ -1413,7 +1412,7 @@ def run_datagen_games(
     games_file,
     book,
     threads,
-    games_stc,
+    games,
     run,
     remote,
     key,
@@ -1481,14 +1480,14 @@ def run_datagen_games(
     except FileNotFoundError:
         pass
 
-    games = games_stc
+    nodes = run["args"]["nodes"]
 
     cmd = [
         new_engine_name,
         "-o",
         games_name,
         "-n",
-        "5000",
+        str(nodes),
         "-t",
         str(threads),
         "-g",

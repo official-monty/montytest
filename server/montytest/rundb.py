@@ -426,6 +426,7 @@ class RunDb:
         base_tag,
         new_tag,
         num_games,
+        nodes,
         tc,
         new_tc,
         book,
@@ -466,6 +467,7 @@ class RunDb:
             "base_nets": base_nets,
             "new_nets": new_nets,
             "num_games": num_games,
+            "nodes": nodes,
             "tc": tc,
             "new_tc": new_tc,
             "book": book,
@@ -1023,6 +1025,11 @@ class RunDb:
         if "sprt" in run["args"]:
             batch_size = 2 * run["args"]["sprt"].get("batch_size", 1)
             games = max(batch_size, batch_size * int(games / batch_size + 1 / 2))
+        elif "datagen" in run['args']:
+             BASELINE_NPS = 184087 #Baseline NPS remember to adjust
+             game_time = run["args"]["nodes"] * 111 / BASELINE_NPS
+             games = self.task_duration / game_time * worker_info["concurrency"]
+             games = max(2, 2 * int(games / 2 + 1 / 2))
         else:
             games = max(2, 2 * int(games / 2 + 1 / 2))
         return games
