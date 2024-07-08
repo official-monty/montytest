@@ -123,7 +123,11 @@
               % else:
                 ${run['args']['num_games']}
               % endif
-              @ ${run['args']['tc']} th ${str(run['args'].get('threads',1))}
+              % if not 'datagen' in run['args'] or not run['args'].get('datagen', False):
+                @ ${run['args']['tc']} th ${str(run['args'].get('threads',1))}
+              % elif 'nodes' in run['args']:
+                @ ${run['args']['nodes']}n
+              % endif
               </span>
               % if not run['finished']:
                 <div>
