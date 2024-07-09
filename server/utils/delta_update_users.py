@@ -47,11 +47,18 @@ def initialize_info(rundb, clear_stats):
 def compute_games_rates(rundb, info_tuple):
     # use the reference core nps, also set in rundb.py and games.py
     for machine in rundb.get_machines():
-        games_per_hour = (
-            (machine["nps"] / 184087)
-            * (3600.0 / estimate_game_duration(machine["run"]["args"]["tc"]))
-            * (int(machine["concurrency"]) // machine["run"]["args"].get("threads", 1))
-        )
+        if "datagen" in machine["run"]["args"] and machine["run"]["args"].get('datagen', False):
+            games_per_hour = (
+                (machine["nps"] / 184087)
+                * (3600.0 / (machine["run"]["args"]["nodes"] * 111 / 184087))
+                * (int(machine["concurrency"]))
+            )
+        else:
+            games_per_hour = (
+                (machine["nps"] / 184087)
+                * (3600.0 / estimate_game_duration(machine["run"]["args"]["tc"]))
+                * (int(machine["concurrency"]) // machine["run"]["args"].get("threads", 1))
+            )
         for info in info_tuple:
             info[machine["username"]]["games_per_hour"] += games_per_hour
 
@@ -66,7 +73,11 @@ def process_run(run, info):
         return
 
     # Update the information for the workers contributed by the users
-    tc = estimate_game_duration(run["args"]["tc"])
+    if "datagen" in run["args"] and run["args"].get('datagen', False):
+        BASELINE_NPS = 184087
+        adjusted_tc = run["args"]["nodes"] * 111 / BASELINE_NPS 
+    else:    
+        adjusted_tc = estimate_game_duration(run["args"]["tc"]) * int(run["args"].get("threads", 1))
     for task in run["tasks"]:
         if "worker_info" not in task:
             continue
@@ -91,7 +102,7 @@ def process_run(run, info):
             task.get("last_updated", datetime.min.replace(tzinfo=timezone.utc)),
         )
         info_user["cpu_hours"] += float(
-            num_games * int(run["args"].get("threads", 1)) * tc / (60 * 60)
+            num_games * adjusted_tc / (60 * 60)
         )
         info_user["games"] += num_games
 
