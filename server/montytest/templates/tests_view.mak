@@ -553,12 +553,11 @@
     const button = e.currentTarget;
     button.textContent = "Downloading...";
     try {
-      let response;
-      if ("datagen" in run["args"] && run["args"].get('datagen', false)) {
-            response = await fetch(`/api/run_vtds/${run["_id"]}.binpack.gz`);
-      } else {
-            response = await fetch(`/api/run_pgns/${run["_id"]}.pgn.gz`);
-      }
+      % if "datagen" in run["args"] and run["args"].get('datagen', False):
+            let response = await fetch(`/api/run_vtds/${run["_id"]}.binpack.gz`);
+      % else:
+            let response = await fetch(`/api/run_pgns/${run["_id"]}.pgn.gz`);
+      % endif
       if (!response.ok) {
         if (response.status === 404) {
           alertError("No games found for this run");
@@ -604,7 +603,6 @@
       a.click();
       document.body.removeChild(a);
     } catch (error) {
-      console.log(run["_id"])
       alertError("Network error: please check your network!");
     } finally {
       downloading = false;
