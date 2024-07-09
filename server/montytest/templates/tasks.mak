@@ -69,7 +69,7 @@
     <td>${stats.get('crashes', '-')}</td>
     <td>${stats.get('time_losses', '-')}</td>
 
-    % if 'spsa' not in run['args']:
+    % if 'spsa' not in run['args'] and not ("datagen" in run['args'] and run["args"].get('datagen', False)):
       % if 'residual' in task and task['residual']!=float("inf"):
         <td style="background-color:${task['residual_color']}">
           ${f"{task['residual']:.3f}"}

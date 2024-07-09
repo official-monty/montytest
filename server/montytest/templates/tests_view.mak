@@ -286,7 +286,7 @@
         </div>
       % endif
 
-      % if 'spsa' not in run['args'] and run['args']['base_signature'] == run['args']['new_signature']:
+      % if 'spsa' not in run['args'] and run['args']['base_signature'] == run['args']['new_signature'] and not ("datagen" in run['args'] and run["args"].get('datagen', False)):
         <div class="alert alert-info mb-2">
           Note: The new signature is the same as base signature.
         </div>
@@ -470,7 +470,7 @@
           <th>Crashes</th>
           <th>Time</th>
 
-          % if 'spsa' not in run['args']:
+          % if 'spsa' not in run['args'] and not ("datagen" in run['args'] and run["args"].get('datagen', False)):
             <th>Residual</th>
           % endif
         </tr>
