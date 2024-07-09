@@ -598,7 +598,11 @@
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${run["_id"]}.pgn.gz`;
+      % if "datagen" in run["args"] and run["args"].get('datagen', False):
+            a.download = `${run["_id"]}.binpack.gz`;
+      % else:
+            a.download = `${run["_id"]}.pgn.gz`;
+      % endif
       document.body.append(a);
       a.click();
       document.body.removeChild(a);
