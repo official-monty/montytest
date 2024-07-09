@@ -1025,7 +1025,7 @@ class RunDb:
         if "sprt" in run["args"]:
             batch_size = 2 * run["args"]["sprt"].get("batch_size", 1)
             games = max(batch_size, batch_size * int(games / batch_size + 1 / 2))
-        elif "datagen" in run['args']:
+        elif "datagen" in run['args'] and run["args"].get('datagen', False):
              BASELINE_NPS = 184087 #Baseline NPS remember to adjust
              game_time = run["args"]["nodes"] * 111 / BASELINE_NPS
              games = self.task_duration / game_time * worker_info["concurrency"]
