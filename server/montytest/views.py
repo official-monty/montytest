@@ -925,8 +925,10 @@ def validate_form(request):
     odds = request.POST.get("odds", "off")  # off checkboxes are not posted
     if odds == "off":
         data["new_tc"] = data["tc"]
-        
-    if request.POST.get("datagen") is not None and (request.POST["stop_rule"] == "spsa" or request.POST["stop_rule"] == "sprt"):
+
+    if request.POST.get("datagen") is not None and (
+        request.POST["stop_rule"] == "spsa" or request.POST["stop_rule"] == "sprt"
+    ):
         raise Exception("Datagen only supports fixed games tests")
 
     if not re.match(r"^([1-9]\d*/)?\d+(\.\d+)?(\+\d+(\.\d+)?)?$", data["tc"]):
@@ -987,7 +989,7 @@ def validate_form(request):
 
     if request.POST["stop_rule"] == "spsa":
         data["base_signature"] = data["new_signature"]
-        
+
     if request.POST.get("datagen") is not None:
         data["base_options"] = "Hash=32"
         data["new_options"] = "Hash=32"
@@ -996,7 +998,7 @@ def validate_form(request):
     for k, v in data.items():
         if len(v) == 0:
             raise Exception("Missing required option: {}".format(k))
-        
+
     if request.POST.get("datagen") is not None:
         data["threads"] = 1
 
@@ -1069,12 +1071,12 @@ def validate_form(request):
                 ", ".join(missing_nets),
             )
         )
-    
+
     if request.POST.get("datagen") is None:
         data["threads"] = int(request.POST["threads"])
     else:
         data["nodes"] = int(request.POST["nodes"])
-        
+
     data["priority"] = int(request.POST["priority"])
     data["throughput"] = int(request.POST["throughput"])
 
@@ -1616,7 +1618,11 @@ def tests_view(request):
 
         if name == "spsa":
             run_args.append(("spsa", value, ""))
-        elif "datagen" in run["args"] and run["args"]["datagen"] is False and  name != "nodes":
+        elif (
+            "datagen" in run["args"]
+            and run["args"]["datagen"] is False
+            and name != "nodes"
+        ):
             run_args.append((name, html.escape(str(value)), url))
         elif (name != "tc" and name != "new_tc") or "datagen" not in run["args"]:
             run_args.append((name, html.escape(str(value)), url))

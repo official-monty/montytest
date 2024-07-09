@@ -597,8 +597,6 @@ class TestRunFinished(unittest.TestCase):
         self.assertEqual(response["task_id"], 0)
         task1 = self.rundb.get_run(run_id)["tasks"][0]
         task_size1 = task1["num_games"]
-        
-        print(task_size1)
 
         # Finish task 1 of 2
         n_wins = task_size1 // 5

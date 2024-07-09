@@ -26,7 +26,7 @@ class GeneratorAsFileReader:
             try:
                 chunk = next(self.generator)
                 if isinstance(chunk, str):
-                    chunk = chunk.encode('utf-8')  # Convert chunk to bytes if necessary
+                    chunk = chunk.encode("utf-8")  # Convert chunk to bytes if necessary
                 self.buffer += chunk
             except StopIteration:
                 break
@@ -304,8 +304,8 @@ def format_results(run_results, run):
             "Ptnml(0-2): "
             + ", ".join(str(run_results["pentanomial"][i]) for i in range(0, 5))
         )
- 
-    if "datagen" in run["args"] and run["args"].get('datagen', False):
+
+    if "datagen" in run["args"] and run["args"].get("datagen", False):
         result["style"] = "#66CCFF !important"
     elif state == "rejected":
         if WLD[0] > WLD[1]:
@@ -449,8 +449,8 @@ def remaining_hours(run):
     else:
         expected_games = run["args"]["num_games"]
         remaining_games = max(0, expected_games - r["wins"] - r["losses"] - r["draws"])
-        if("datagen" in run["args"] and run["args"]["datagen"] is True):
-            BASELINE_NPS = 184087 #Baseline NPS remember to adjust
+        if "datagen" in run["args"] and run["args"]["datagen"] is True:
+            BASELINE_NPS = 184087  # Baseline NPS remember to adjust
             game_secs = run["args"]["nodes"] * 111 / BASELINE_NPS
             threads = 1
         else:
