@@ -22,7 +22,11 @@
   %>
   <tr class="${active_style}" id=task${task_id}>
     <td>
+    % if "datagen" in run["args"] and run["args"].get('datagen', False):
+      <a href=${f"/api/vtd/{run['_id']}-{task_id:d}.binpack"}>${task_id}</a>
+    % else:
       <a href=${f"/api/pgn/{run['_id']}-{task_id:d}.pgn"}>${task_id}</a>
+    % endif
     </td>
     % if 'bad' in task:
       <td style="text-decoration:line-through; background-color:#ffebeb">
