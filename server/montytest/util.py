@@ -735,7 +735,7 @@ class Scheduler:
 
         :param initial_delay: The delay before the first execution of the task, defaults to period
         :type initial_delay: float, optional
-        
+
         :param min_delay: The minimum delay before the same task is repeated, defaults to 0.0
         :type min_delay: float, optional
 

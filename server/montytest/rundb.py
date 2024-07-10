@@ -570,10 +570,10 @@ class RunDb:
             raise Exception(message)
 
         # We cannot use self.buffer since new_run does not have an id yet.
-        run_id = self.runs.insert_one(new_run).inserted_id
+        run_id = str(self.runs.insert_one(new_run).inserted_id)
 
         with self.unfinished_runs_lock:
-            self.unfinished_runs.add(str(run_id))
+            self.unfinished_runs.add(run_id)
 
         return run_id
 
@@ -794,7 +794,7 @@ class RunDb:
                 oldest_run_id = oldest_run["_id"]
                 oldest_entry["is_changed"] = False
                 oldest_entry["last_sync_time"] = time.time()
-                
+
         if oldest_entry is not None:
             with self.active_run_lock(str(oldest_run_id)):
                 self.runs.replace_one({"_id": oldest_run_id}, oldest_run)
