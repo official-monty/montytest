@@ -627,6 +627,7 @@ class Task:
         period,
         worker,
         initial_delay=None,
+        min_delay=0.0,
         one_shot=False,
         jitter=0.0,
         scheduler=None,
@@ -639,6 +640,7 @@ class Task:
             initial_delay = self.period
         else:
             initial_delay = timedelta(seconds=initial_delay)
+        self.min_delay = timedelta(seconds=min_delay)
         self.__rel_jitter = jitter * self.period
         self.__next_schedule = (
             datetime.now(timezone.utc)
@@ -661,7 +663,13 @@ class Task:
             if not self.one_shot:
                 jitter = uniform(-self.__rel_jitter, self.__rel_jitter)
                 with self.__lock:
-                    self.__next_schedule += self.period + jitter
+                    self.__next_schedule = (
+                        max(
+                            self.__next_schedule + self.period,
+                            datetime.now(timezone.utc) + self.min_delay,
+                        )
+                        + jitter
+                    )
             else:
                 self.__expired = True
 
@@ -711,6 +719,7 @@ class Scheduler:
         period,
         worker,
         initial_delay=None,
+        min_delay=0.0,
         one_shot=False,
         jitter=None,
         args=(),
@@ -726,6 +735,9 @@ class Scheduler:
 
         :param initial_delay: The delay before the first execution of the task, defaults to period
         :type initial_delay: float, optional
+        
+        :param min_delay: The minimum delay before the same task is repeated, defaults to 0.0
+        :type min_delay: float, optional
 
         :param one_shot: If true, execute the task only once, defaults to False
         :type one_shot: bool, optional
@@ -747,6 +759,7 @@ class Scheduler:
             period,
             worker,
             initial_delay=initial_delay,
+            min_delay=min_delay,
             one_shot=one_shot,
             jitter=jitter,
             scheduler=self,
