@@ -545,10 +545,11 @@ def compute_flags(run):
         state = run["args"]["sprt"].get("state", "")
     else:
         _, _, los = montytest.stats.stat_util.get_elo(results["pentanomial"])
-        if los >= 0.95:
-            state = "accepted"
-        else:
+
+        if los < 0.05:
             state = "rejected"
+        elif los > 0.95:
+            state = "accepted"
 
     if state == "accepted":
         return green_flag
@@ -641,7 +642,7 @@ valid_aggregated_data = intersect(
 # about non-validation of runs created with the prior
 # schema.
 
-RUN_VERSION = 3
+RUN_VERSION = 4
 
 runs_schema = intersect(
     {
