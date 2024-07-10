@@ -1484,7 +1484,7 @@ def run_datagen_games(
     nodes = run["args"]["nodes"]
 
     cmd = [
-        new_engine_name,
+        new_engine,
         "-o",
         games_name,
         "-n",
