@@ -118,10 +118,16 @@
               <span class="${'rounded ltc-highlight me-1' if is_active_sprt_ltc(run) else 'me-1'}">
               % if 'sprt' in run['args']:
                 <a href="/tests/live_elo/${str(run['_id'])}" target="_blank">sprt</a>
+              % elif 'datagen' in run['args']:
+                datagen
               % else:
                 ${run['args']['num_games']}
               % endif
-              @ ${run['args']['tc']} th ${str(run['args'].get('threads',1))}
+              % if not 'datagen' in run['args'] or not run['args'].get('datagen', False):
+                @ ${run['args']['tc']} th ${str(run['args'].get('threads',1))}
+              % elif 'nodes' in run['args']:
+                @ ${run['args']['nodes']}n
+              % endif
               </span>
               % if not run['finished']:
                 <div>

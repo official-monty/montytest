@@ -447,6 +447,7 @@ api_schema = intersect(
         "run_id?": run_id,
         "task_id?": task_id,
         "pgn?": str,
+        "vtd?": str,
         "message?": str,
         "worker_info": worker_info_schema_api,
         "spsa?": intersect(
@@ -535,7 +536,9 @@ def compute_flags(run):
     WLD = [results["wins"], results["losses"], results["draws"]]
     if not run["finished"]:
         return no_flags
-    if "spsa" in run["args"]:
+    if "spsa" in run["args"] or (
+        "datagen" in run["args"] and run["args"].get("datagen", False)
+    ):
         return no_flags
     state = ""
     if "sprt" in run["args"]:
@@ -638,7 +641,7 @@ valid_aggregated_data = intersect(
 # about non-validation of runs created with the prior
 # schema.
 
-RUN_VERSION = 2
+RUN_VERSION = 3
 
 runs_schema = intersect(
     {
@@ -672,6 +675,7 @@ runs_schema = intersect(
                 "base_nets": [net_name, ...],
                 "new_nets": [net_name, ...],
                 "num_games": intersect(uint, even),
+                "nodes": int,
                 "tc": tc,
                 "new_tc": tc,
                 "book": union(epd_file, pgn_file),
@@ -695,6 +699,7 @@ runs_schema = intersect(
                 "itp": unumber,
                 "priority": number,
                 "adjudication": bool,
+                "datagen": bool,
                 "sprt?": intersect(
                     {
                         "alpha": 0.05,

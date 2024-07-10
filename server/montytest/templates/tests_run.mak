@@ -536,7 +536,7 @@
                     value="${args.get('threads', 1)}"
                   >
                 </div>
-                <div class="col mb-2">
+                <div class="col mb-2 tc">
                   <label for="tc" class="form-label" title="Time control">TC</label>
                   <input
                     type="text"
@@ -544,6 +544,16 @@
                     id="tc"
                     class="form-control"
                     value="${args.get('tc', '20+0.2')}"
+                  >
+                </div>
+                <div class="col mb-2 nodes" style="display: none;">
+                  <label for="nodes" class="form-label">Nodes</label>
+                  <input
+                    type="text"
+                    name="nodes"
+                    id="nodes"
+                    class="form-control"
+                    value="5000"
                   >
                 </div>
                 <div class="col mb-2 new_tc" style="display: none;">
@@ -653,6 +663,20 @@
                     >
                   </div>
                 </div>
+                <div class="mb-2 stop-rule stop-rule-games" style="${'display: none' if (args.get('sprt') or not is_rerun) else ''}">
+				    <div class="col text-nowrap">
+                      <div class="mb-2 form-check">
+                        <label class="form-check-label" for="checkbox-datagen">Datagen</label>
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="checkbox-datagen"
+                          name="datagen"
+                          ${'checked' if args.get("datagen", False) else ''}
+                        >
+                      </div>
+				    </div>
+                </div>
               </div>
             </div>
           </div>
@@ -689,6 +713,7 @@
   });
 
   let stopRule = null;
+  let isDatagen = null;
 
   const presetBounds = {
     'standard STC': [ 0.0, 4.0],
@@ -761,6 +786,7 @@
           base_branch,
           test_signature,
           base_signature,
+		  datagen,
         } = JSON.parse(testOptions);
         document.getElementById("tc").value = tc;
         document.getElementById("new_tc").value = new_tc;
@@ -834,11 +860,115 @@
       document.getElementById("test-signature").value;
   }
 
+  // Datagen field is changed
+  document.querySelectorAll("[name=datagen]").forEach((checkbox) =>
+    checkbox.addEventListener("change", function () {
+      isDatagen = checkbox.checked;
+      
+      if (!isRun) {
+          if (isDatagen) {
+            // Grey out more things
+            document.getElementById("checkbox-auto-purge").disabled = true;
+            document.getElementById("checkbox-time-odds").disabled = true;
+            document.getElementById("checkbox-adjudication").disabled = true;
+
+            document.querySelector('label[for="checkbox-auto-purge"]').classList.add('disabled');
+            document.querySelector('label[for="checkbox-time-odds"]').classList.add('disabled');
+            document.querySelector('label[for="checkbox-adjudication"]').classList.add('disabled');
+
+            document.getElementById("threads").value = "";
+            document.getElementById("threads").readOnly = true;
+            document.getElementById("new-options").value = "";
+            document.getElementById("new-options").readOnly = true;
+            document.getElementById("base-options").value = "";
+            document.getElementById("base-options").readOnly = true;
+
+            document.querySelector('label[for="stc_test"]').classList.add('greyed');
+            document.querySelector('label[for="ltc_test"]').classList.add('greyed');
+            document.querySelector('label[for="stc_smp_test"]').classList.add('greyed');
+            document.querySelector('label[for="ltc_smp_test"]').classList.add('greyed');
+            document.querySelector('label[for="vltc_test"]').classList.add('greyed');
+            document.querySelector('label[for="vltc_smp_test"]').classList.add('greyed');
+            document.querySelector('label[for="pt_test"]').classList.add('greyed');
+            document.querySelector('label[for="pt_smp_test"]').classList.add('greyed');
+
+            // base branch and test branch should be the same for SPSA tests
+            document.getElementById("base-branch").readOnly = true;
+            document.getElementById("base-branch").value = document.getElementById("test-branch").value;
+            document
+              .getElementById("test-branch")
+              .addEventListener("input", testBranchHandler);
+            document.getElementById("base-signature").readOnly = true;
+            document.getElementById("base-signature").value = document.getElementById("test-signature").value;
+            document
+              .getElementById("test-signature")
+              .addEventListener("input", testSignatureHandler);
+            isDatagen = true;
+
+            // Swap out the TC fields for the Nodes field
+            document.querySelector('.new_tc').style.display = "none";
+            document.querySelector('.tc').style.display = "none";
+            document.querySelector('.nodes').style.display = "";
+
+          } else {
+
+
+            if(document.getElementById("threads").readOnly)
+            {
+                // Ungrey out more things
+                document.getElementById("checkbox-auto-purge").disabled = false;
+                document.getElementById("checkbox-time-odds").disabled = false;
+                document.getElementById("checkbox-adjudication").disabled = false;
+
+                document.querySelector('label[for="checkbox-auto-purge"]').classList.remove('disabled');
+                document.querySelector('label[for="checkbox-time-odds"]').classList.remove('disabled');
+                document.querySelector('label[for="checkbox-adjudication"]').classList.remove('disabled');
+
+                document.getElementById("threads").value = "${args.get('threads', '1')}";
+                document.getElementById("threads").readOnly = false;
+                document.getElementById("new-options").value = "${args.get('new_options', 'Hash=32')}";
+                document.getElementById("new-options").readOnly = false;
+                document.getElementById("base-options").value = "${args.get('base_options', 'Hash=32')}";
+                document.getElementById("base-options").readOnly = false;
+
+                document.querySelector('label[for="stc_test"]').classList.remove('greyed');
+                document.querySelector('label[for="ltc_test"]').classList.remove('greyed');
+                document.querySelector('label[for="stc_smp_test"]').classList.remove('greyed');
+                document.querySelector('label[for="ltc_smp_test"]').classList.remove('greyed');
+                document.querySelector('label[for="vltc_test"]').classList.remove('greyed');
+                document.querySelector('label[for="vltc_smp_test"]').classList.remove('greyed');
+                document.querySelector('label[for="pt_test"]').classList.remove('greyed');
+                document.querySelector('label[for="pt_smp_test"]').classList.remove('greyed');
+
+                document.getElementById("base-branch").removeAttribute("readonly");
+                document.getElementById("base-branch").value = initialBaseBranch;
+                document.getElementById("base-signature").removeAttribute("readonly");
+                document.getElementById("base-signature").value = initialBaseSignature;
+                document
+                  .getElementById("test-branch")
+                  .removeEventListener("input", testBranchHandler);
+                document
+                  .getElementById("test-signature")
+                  .removeEventListener("input", testSignatureHandler);
+            }
+
+            isDatagen = false;
+
+            // Swap out the nodes field for the TC field
+            document.querySelector('.tc').style.display = "";
+            document.querySelector('.nodes').style.display = "none";
+            document.getElementById('checkbox-time-odds').dispatchEvent(new Event('change'));
+
+          }
+        }
+    })
+  ); 
+
+
   // Stop rule is changed
   document.querySelectorAll("[name=stop-rule]").forEach((btn) =>
     btn.addEventListener("click", function () {
       stopRule = btn.value;
-
       if (stopRule) {
         // Hide all elements that have the class "stop-rule"
         document
@@ -884,6 +1014,14 @@
           updateSprtBounds(document.getElementById("bounds").value);
         }
       }
+
+     // if (stopRule === "stop-rule-games") {
+          document.querySelectorAll("[name=datagen]").forEach((checkbox) => {
+               checkbox.checked = false;
+               checkbox.dispatchEvent(new Event('change'));
+          });
+     // }
+
     })
   );
 

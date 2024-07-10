@@ -926,6 +926,11 @@ def validate_form(request):
     if odds == "off":
         data["new_tc"] = data["tc"]
 
+    if request.POST.get("datagen") is not None and (
+        request.POST["stop_rule"] == "spsa" or request.POST["stop_rule"] == "sprt"
+    ):
+        raise Exception("Datagen only supports fixed games tests")
+
     if not re.match(r"^([1-9]\d*/)?\d+(\.\d+)?(\+\d+(\.\d+)?)?$", data["tc"]):
         raise Exception("Bad time control format (base TC)")
 
@@ -985,14 +990,24 @@ def validate_form(request):
     if request.POST["stop_rule"] == "spsa":
         data["base_signature"] = data["new_signature"]
 
+    if request.POST.get("datagen") is not None:
+        data["base_options"] = "Hash=32"
+        data["new_options"] = "Hash=32"
+        data["threads"] = "1"
+
     for k, v in data.items():
         if len(v) == 0:
             raise Exception("Missing required option: {}".format(k))
+
+    if request.POST.get("datagen") is not None:
+        data["threads"] = 1
 
     # Handle boolean options
     data["auto_purge"] = request.POST.get("auto-purge") is not None
     # checkbox is to _disable_ adjudication
     data["adjudication"] = request.POST.get("adjudication") is None
+
+    data["datagen"] = request.POST.get("datagen") is not None
 
     # In case of reschedule use old data,
     # otherwise resolve sha and update user's tests_repo
@@ -1057,8 +1072,11 @@ def validate_form(request):
             )
         )
 
-    # Integer parameters
-    data["threads"] = int(request.POST["threads"])
+    if request.POST.get("datagen") is None:
+        data["threads"] = int(request.POST["threads"])
+    else:
+        data["nodes"] = int(request.POST["nodes"])
+
     data["priority"] = int(request.POST["priority"])
     data["throughput"] = int(request.POST["throughput"])
 
@@ -1110,7 +1128,7 @@ def validate_form(request):
         if data["num_games"] <= 0:
             raise Exception("Number of games must be >= 0")
 
-    max_games = 3200000
+    max_games = 10000000
     if data["num_games"] > max_games:
         raise Exception("Number of games must be <= " + str(max_games))
 
@@ -1515,6 +1533,7 @@ def tests_view(request):
         "sprt",
         "num_games",
         "spsa",
+        "nodes",
         "tc",
         "new_tc",
         "threads",
@@ -1599,7 +1618,13 @@ def tests_view(request):
 
         if name == "spsa":
             run_args.append(("spsa", value, ""))
-        else:
+        elif (
+            "datagen" in run["args"]
+            and run["args"]["datagen"] is False
+            and name != "nodes"
+        ):
+            run_args.append((name, html.escape(str(value)), url))
+        elif (name != "tc" and name != "new_tc") or "datagen" not in run["args"]:
             run_args.append((name, html.escape(str(value)), url))
 
     active = 0

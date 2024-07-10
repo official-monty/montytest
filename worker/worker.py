@@ -59,7 +59,7 @@ from updater import update
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 0
+WORKER_VERSION = 1
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
@@ -1366,7 +1366,7 @@ def fetch_and_handle_task(
     message = ""
     server_message = ""
     api = remote + "/api/failed_task"
-    pgn_file = [None]
+    games_file = [None]
     try:
         run_games(
             worker_info,
@@ -1375,7 +1375,7 @@ def fetch_and_handle_task(
             remote,
             run,
             task_id,
-            pgn_file,
+            games_file,
             clear_binaries,
         )
         success = True
@@ -1414,13 +1414,37 @@ def fetch_and_handle_task(
         except Exception as e:
             print("Exception posting failed_task:\n", e, sep="", file=sys.stderr)
     # Upload PGN file.
-    if pgn_file[0] is not None:
-        pgn_file = pgn_file[0]
-        if pgn_file.exists():
-            if "spsa" not in run["args"]:
+    if games_file[0] is not None:
+        games_file = games_file[0]
+        if games_file.exists():
+            if run["args"].get("datagen", False):
+                try:
+                    data = games_file.read_bytes()
+                    with io.BytesIO() as gz_buffer:
+                        with gzip.GzipFile(
+                            filename=f"{str(run['_id'])}-{task_id}.binpack.gz",
+                            mode="wb",
+                            fileobj=gz_buffer,
+                        ) as gz:
+                            gz.write(data)
+                        payload["vtd"] = base64.b64encode(gz_buffer.getvalue()).decode()
+                    print(
+                        "Uploading compressed binpack of {} bytes".format(
+                            len(payload["vtd"])
+                        )
+                    )
+                    req = send_api_post_request(remote + "/api/upload_vtd", payload)
+                except Exception as e:
+                    print(
+                        "\nException uploading binpack file:\n",
+                        e,
+                        sep="",
+                        file=sys.stderr,
+                    )
+            elif "spsa" not in run["args"]:
                 try:
                     # Ignore non utf-8 characters in PGN file.
-                    data = pgn_file.read_text(encoding="utf-8", errors="ignore")
+                    data = games_file.read_text(encoding="utf-8", errors="ignore")
                     with io.BytesIO() as gz_buffer:
                         with gzip.GzipFile(
                             filename=f"{str(run['_id'])}-{task_id}.pgn.gz",
@@ -1441,7 +1465,7 @@ def fetch_and_handle_task(
                     )
 
             try:
-                pgn_file.unlink()
+                games_file.unlink()
             except Exception as e:
                 print("Exception deleting PGN file:\n", e, sep="", file=sys.stderr)
 

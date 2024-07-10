@@ -142,7 +142,24 @@ option.grayedoutoption {
   background-color: var(--bg-dark-5);
 }
 
+/* Styling for disabled checkboxes */
+.disabled {
+  color: #aaa; /* Lighter text color */
+  cursor: not-allowed; /* Change cursor to indicate it's disabled */
+  opacity: 0.6; /* Lowered opacity for a faded look */
+  pointer-events: none; /* Disable interactions */
+}
+
 /* Button groups */
+.btn[disabled] {
+  background: #555; /* Darker background */
+  color: #aaa; /* Lighter text color */
+  border: 1px solid #777; /* Greyed-out border */
+  cursor: not-allowed; /* Change cursor to indicate it's disabled */
+  opacity: 0.6; /* Lowered opacity for a faded look */
+  pointer-events: none; /* Ensure it is not clickable */
+}
+
 .btn {
   text-shadow: none;
   filter: contrast(0.6);

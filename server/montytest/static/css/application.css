@@ -608,6 +608,13 @@ input[type="checkbox"],
   opacity: 0.5;
 }
 
+.greyed {
+  pointer-events: none;
+  opacity: 0.5;
+  color: #aaa; /* Lighter text color */
+  cursor: not-allowed; /* Change cursor to indicate it's disabled */
+}
+
 #machines {
   max-height: 41vh;
 }

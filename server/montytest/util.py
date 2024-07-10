@@ -24,7 +24,10 @@ class GeneratorAsFileReader:
     def read(self, size=-1):
         while size < 0 or len(self.buffer) < size:
             try:
-                self.buffer += next(self.generator)
+                chunk = next(self.generator)
+                if isinstance(chunk, str):
+                    chunk = chunk.encode("utf-8")  # Convert chunk to bytes if necessary
+                self.buffer += chunk
             except StopIteration:
                 break
         result, self.buffer = self.buffer[:size], self.buffer[size:]
@@ -302,7 +305,9 @@ def format_results(run_results, run):
             + ", ".join(str(run_results["pentanomial"][i]) for i in range(0, 5))
         )
 
-    if state == "rejected":
+    if "datagen" in run["args"] and run["args"].get("datagen", False):
+        result["style"] = "#66CCFF !important"
+    elif state == "rejected":
         if WLD[0] > WLD[1]:
             result["style"] = "yellow"
         else:
@@ -404,6 +409,7 @@ def format_date(date):
 
 def remaining_hours(run):
     r = run["results"]
+    threads = int(run["args"].get("threads", 1))
     if "sprt" in run["args"]:
         # Current average number of games. The number should be regularly updated.
         average_total_games = 95000
@@ -439,11 +445,17 @@ def remaining_hours(run):
             int(expected_games_llr * t + average_total_games * (1 - t)),
         )
         remaining_games = max(0, expected_games - 2 * N)
+        game_secs = estimate_game_duration(run["args"]["tc"])
     else:
         expected_games = run["args"]["num_games"]
         remaining_games = max(0, expected_games - r["wins"] - r["losses"] - r["draws"])
-    game_secs = estimate_game_duration(run["args"]["tc"])
-    return game_secs * remaining_games * int(run["args"].get("threads", 1)) / (60 * 60)
+        if "datagen" in run["args"] and run["args"]["datagen"] is True:
+            BASELINE_NPS = 184087  # Baseline NPS remember to adjust
+            game_secs = run["args"]["nodes"] * 111 / BASELINE_NPS
+            threads = 1
+        else:
+            game_secs = estimate_game_duration(run["args"]["tc"])
+    return game_secs * remaining_games * threads / (60 * 60)
 
 
 def diff_date(date):

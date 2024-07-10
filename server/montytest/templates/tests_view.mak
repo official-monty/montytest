@@ -286,7 +286,7 @@
         </div>
       % endif
 
-      % if 'spsa' not in run['args'] and run['args']['base_signature'] == run['args']['new_signature']:
+      % if 'spsa' not in run['args'] and run['args']['base_signature'] == run['args']['new_signature'] and not ("datagen" in run['args'] and run["args"].get('datagen', False)):
         <div class="alert alert-info mb-2">
           Note: The new signature is the same as base signature.
         </div>
@@ -470,7 +470,7 @@
           <th>Crashes</th>
           <th>Time</th>
 
-          % if 'spsa' not in run['args']:
+          % if 'spsa' not in run['args'] and not ("datagen" in run['args'] and run["args"].get('datagen', False)):
             <th>Residual</th>
           % endif
         </tr>
@@ -553,7 +553,11 @@
     const button = e.currentTarget;
     button.textContent = "Downloading...";
     try {
-      const response = await fetch(`/api/run_pgns/${run["_id"]}.pgn.gz`);
+      % if "datagen" in run["args"] and run["args"].get('datagen', False):
+            let response = await fetch(`/api/run_vtds/${run["_id"]}.binpack.gz`);
+      % else:
+            let response = await fetch(`/api/run_pgns/${run["_id"]}.pgn.gz`);
+      % endif
       if (!response.ok) {
         if (response.status === 404) {
           alertError("No games found for this run");
@@ -594,7 +598,11 @@
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${run["_id"]}.pgn.gz`;
+      % if "datagen" in run["args"] and run["args"].get('datagen', False):
+            a.download = `${run["_id"]}.binpack.gz`;
+      % else:
+            a.download = `${run["_id"]}.pgn.gz`;
+      % endif
       document.body.append(a);
       a.click();
       document.body.removeChild(a);

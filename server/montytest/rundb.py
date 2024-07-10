@@ -68,6 +68,7 @@ class RunDb:
         self.actiondb = ActionDb(self.db)
         self.workerdb = WorkerDb(self.db)
         self.pgndb = self.db["pgns"]
+        self.vtddb = self.db["vtd"]
         self.nndb = self.db["nns"]
         self.runs = self.db["runs"]
         self.deltas = self.db["deltas"]
@@ -432,6 +433,7 @@ class RunDb:
         threads,
         base_options,
         new_options,
+        nodes=5000,
         info="",
         resolved_base="",
         resolved_new="",
@@ -454,6 +456,7 @@ class RunDb:
         throughput=100,
         priority=0,
         adjudication=True,
+        datagen=False,
     ):
         if start_time is None:
             start_time = datetime.now(timezone.utc)
@@ -464,6 +467,7 @@ class RunDb:
             "base_nets": base_nets,
             "new_nets": new_nets,
             "num_games": num_games,
+            "nodes": nodes,
             "tc": tc,
             "new_tc": new_tc,
             "book": book,
@@ -487,6 +491,7 @@ class RunDb:
             "itp": 100,  # internal throughput
             "priority": priority,
             "adjudication": adjudication,
+            "datagen": datagen,
         }
 
         if sprt is not None:
@@ -590,6 +595,38 @@ class RunDb:
             record,
         )
         return {}
+
+    def upload_vtd(self, run_id, vtd_zip):
+        record = {"run_id": run_id, "vtd_zip": Binary(vtd_zip), "size": len(vtd_zip)}
+
+        self.vtddb.insert_one(record)
+
+        return {}
+
+    def get_vtd(self, run_id):
+        vtd = self.vtddb.find_one({"run_id": run_id})
+        return (vtd["vtd_zip"], vtd["size"]) if vtd else (None, 0)
+
+    def get_run_vtds(self, run_id):
+        # Compute the total size using MongoDB's aggregation framework
+        vtds_query = {"run_id": {"$regex": f"^{run_id}-\\d+"}}
+        total_size_agg = self.vtddb.aggregate(
+            [
+                {"$match": vtds_query},
+                {"$project": {"size": 1, "_id": 0}},
+                {"$group": {"_id": None, "totalSize": {"$sum": "$size"}}},
+            ]
+        )
+        total_size = total_size_agg.next()["totalSize"] if total_size_agg.alive else 0
+
+        if total_size > 0:
+            # Create a file reader from a generator that yields each pgn.gz file
+            vtds = self.vtddb.find(vtds_query, {"vtd_zip": 1, "_id": 0})
+            vtds_reader = GeneratorAsFileReader(vtd["vtd_zip"] for vtd in vtds)
+        else:
+            vtds_reader = None
+
+        return vtds_reader, total_size
 
     def get_pgn(self, run_id):
         pgn = self.pgndb.find_one({"run_id": run_id})
@@ -988,6 +1025,11 @@ class RunDb:
         if "sprt" in run["args"]:
             batch_size = 2 * run["args"]["sprt"].get("batch_size", 1)
             games = max(batch_size, batch_size * int(games / batch_size + 1 / 2))
+        elif "datagen" in run["args"] and run["args"].get("datagen", False):
+            BASELINE_NPS = 184087  # Baseline NPS remember to adjust
+            game_time = run["args"]["nodes"] * 111 / BASELINE_NPS
+            games = self.task_duration / game_time * worker_info["concurrency"]
+            games = max(2, 2 * int(games / 2 + 1 / 2))
         else:
             games = max(2, 2 * int(games / 2 + 1 / 2))
         return games

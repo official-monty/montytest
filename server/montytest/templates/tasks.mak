@@ -22,7 +22,11 @@
   %>
   <tr class="${active_style}" id=task${task_id}>
     <td>
+    % if "datagen" in run["args"] and run["args"].get('datagen', False):
+      <a href=${f"/api/vtd/{run['_id']}-{task_id:d}.binpack"}>${task_id}</a>
+    % else:
       <a href=${f"/api/pgn/{run['_id']}-{task_id:d}.pgn"}>${task_id}</a>
+    % endif
     </td>
     % if 'bad' in task:
       <td style="text-decoration:line-through; background-color:#ffebeb">
@@ -69,7 +73,7 @@
     <td>${stats.get('crashes', '-')}</td>
     <td>${stats.get('time_losses', '-')}</td>
 
-    % if 'spsa' not in run['args']:
+    % if 'spsa' not in run['args'] and not ("datagen" in run['args'] and run["args"].get('datagen', False)):
       % if 'residual' in task and task['residual']!=float("inf"):
         <td style="background-color:${task['residual_color']}">
           ${f"{task['residual']:.3f}"}

@@ -24,6 +24,7 @@ from zipfile import ZipFile
 
 import requests
 
+BASELINE_NPS = 184087
 IS_WINDOWS = "windows" in platform.system().lower()
 IS_MACOS = "darwin" in platform.system().lower()
 LOGFILE = "api.log"
@@ -445,7 +446,9 @@ def convert_book_move_counters(book_file):
             file.write(epd + "\n")
 
 
-def setup_engine(destination, worker_dir, testing_dir, remote, sha, repo_url):
+def setup_engine(
+    destination, worker_dir, testing_dir, remote, sha, repo_url, datagen=False
+):
     """Download and build sources in a temporary directory then move exe to destination"""
     tmp_dir = Path(tempfile.mkdtemp(dir=worker_dir))
 
@@ -467,7 +470,7 @@ def setup_engine(destination, worker_dir, testing_dir, remote, sha, repo_url):
         establish_validated_net(remote, testing_dir, policyfile)
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
-        cmd = ["make", "montytest", f"EXE={destination}"]
+        cmd = ["make", "gen" if datagen else "montytest", f"EXE={destination}"]
 
         if os.path.exists(destination):
             raise FatalException("Another worker is running in the same directory!")
@@ -923,7 +926,14 @@ def launch_cutechess(
 
 
 def run_games(
-    worker_info, current_state, password, remote, run, task_id, pgn_file, clear_binaries
+    worker_info,
+    current_state,
+    password,
+    remote,
+    run,
+    task_id,
+    games_file,
+    clear_binaries,
 ):
     # This is the main cutechess-cli driver.
     # It is ok, and even expected, for this function to
@@ -974,9 +984,6 @@ def run_games(
 
     games_remaining = task["num_games"] - input_total_games
 
-    assert games_remaining > 0
-    assert games_remaining % 2 == 0
-
     book = run["args"]["book"]
     book_depth = run["args"]["book_depth"]
     new_options = run["args"]["new_options"]
@@ -986,6 +993,23 @@ def run_games(
     repo_url = run["args"].get("tests_repo")
     worker_concurrency = int(worker_info["concurrency"])
     games_concurrency = worker_concurrency // threads
+
+    if run["args"].get("datagen", False):
+        run_datagen_games(
+            games_file,
+            book,
+            worker_concurrency,
+            games_remaining,
+            run,
+            remote,
+            worker_info["unique_key"],
+            result,
+            current_state,
+        )
+        return
+
+    assert games_remaining > 0
+    assert games_remaining % 2 == 0
 
     opening_offset = task.get("start", task_id * task["num_games"])
     if "start" in task:
@@ -1095,11 +1119,11 @@ def run_games(
             )
 
     # PGN files output setup.
-    pgn_name = "results-" + worker_info["unique_key"] + ".pgn"
-    pgn_file[0] = testing_dir / pgn_name
-    pgn_file = pgn_file[0]
+    games_name = "results-" + worker_info["unique_key"] + ".pgn"
+    games_file[0] = testing_dir / games_name
+    games_file = games_file[0]
     try:
-        pgn_file.unlink()
+        games_file.unlink()
     except FileNotFoundError:
         pass
 
@@ -1144,7 +1168,7 @@ def run_games(
 
     # Value from running bench on 32 processes on Ryzen 9 7950X
     # also set in rundb.py and delta_update_users.py
-    factor = 184087 / base_nps
+    factor = BASELINE_NPS / base_nps
 
     # Adjust CPU scaling.
     _, tc_limit_ltc = adjust_tc("60+0.6", factor)
@@ -1183,7 +1207,7 @@ def run_games(
             pgnout = []
         else:
             games_to_play = games_remaining
-            pgnout = ["-pgnout", pgn_name]
+            pgnout = ["-pgnout", games_name]
 
         if "sprt" in run["args"]:
             batch_size = 2 * run["args"]["sprt"].get("batch_size", 1)
@@ -1295,5 +1319,230 @@ def run_games(
 
         if not task_alive:
             break
+
+    return
+
+
+def parse_datagen_output(p, tc_factor, result, remote, current_state):
+    saved_stats = copy.deepcopy(result["stats"])
+
+    q = Queue()
+    t_output = threading.Thread(target=enqueue_output, args=(p.stdout, q), daemon=True)
+    t_output.start()
+    t_error = threading.Thread(target=enqueue_output, args=(p.stderr, q), daemon=True)
+    t_error.start()
+
+    tc_limit = tc_factor * 1800 * 1.5  # Allow 50% more time before excepting
+    end_time = datetime.now(timezone.utc) + timedelta(seconds=tc_limit)
+    print("TC limit {} End time: {}".format(tc_limit, end_time))
+
+    while datetime.now(timezone.utc) < end_time:
+        try:
+            line = q.get_nowait().strip()
+        except Empty:
+            if p.poll() is not None:
+                break
+            time.sleep(1)
+            continue
+
+        print(line, flush=True)
+
+        if "finished games" in line:
+            # Parsing sometimes fails. We want to understand why.
+            try:
+                chunks = line.split(" ")
+                wld = [int(chunks[8]), int(chunks[4]), int(chunks[6])]
+            except:
+                raise WorkerException("Failed to parse score line: {}".format(line))
+    else:
+        raise WorkerException(
+            "{} is past end time {}".format(datetime.now(timezone.utc), end_time)
+        )
+
+    result["stats"]["wins"] = wld[0] + saved_stats["wins"]
+    result["stats"]["losses"] = wld[1] + saved_stats["losses"]
+    result["stats"]["draws"] = wld[2] + saved_stats["draws"]
+
+    wins = result["stats"]["wins"]
+    draws = result["stats"]["draws"]
+    losses = result["stats"]["losses"]
+
+    winLossDiff = wins - losses
+
+    result["stats"]["pentanomial"][1] = max(-winLossDiff, 0)
+    result["stats"]["pentanomial"][2] = int(
+        (wins + draws + losses) / 2 - abs(winLossDiff)
+    )
+    result["stats"]["pentanomial"][3] = max(winLossDiff, 0)
+
+    update_succeeded = False
+    for _ in range(5):
+        try:
+            response = send_api_post_request(remote + "/api/update_task", result)
+            if "error" in response:
+                break
+        except Exception as e:
+            print(
+                "Exception calling update_task:\n",
+                e,
+                sep="",
+                file=sys.stderr,
+            )
+            if isinstance(e, FatalException):  # signal
+                raise e
+        else:
+            if not response["task_alive"]:
+                # This task is no longer necessary
+                print(
+                    "The server told us that no more games"
+                    " are needed for the current task."
+                )
+                return False
+            update_succeeded = True
+            break
+        time.sleep(UPDATE_RETRY_TIME)
+    if not update_succeeded:
+        raise WorkerException("Too many failed update attempts")
+    else:
+        current_state["last_updated"] = datetime.now(timezone.utc)
+
+    return True
+
+
+def run_datagen_games(
+    games_file,
+    book,
+    threads,
+    games,
+    run,
+    remote,
+    key,
+    result,
+    current_state,
+):
+    sha_new = run["args"]["resolved_new"]
+    new_engine_name = "monty_datagen_" + sha_new
+
+    repo_url = run["args"].get("tests_repo")
+    worker_dir = Path(__file__).resolve().parent
+    testing_dir = worker_dir / "testing"
+
+    new_engine = testing_dir / new_engine_name
+
+    # Build from sources new and base engines as needed.
+    if not new_engine.with_suffix(EXE_SUFFIX).exists():
+        setup_engine(
+            new_engine,
+            worker_dir,
+            testing_dir,
+            remote,
+            sha_new,
+            repo_url,
+            datagen=True,
+        )
+
+    os.chdir(testing_dir)
+
+    # Download the opening book if missing in the directory.
+    if not (testing_dir / book).exists() or (testing_dir / book).stat().st_size == 0:
+        zipball = book + ".zip"
+        blob = download_from_github(zipball)
+        unzip(blob, testing_dir)
+
+    # convert .epd containing FENs into .epd containing EPDs with move counters
+    # only needed as long as cutechess-cli is the game manager
+    if book.endswith(".epd"):
+        convert_book_move_counters(testing_dir / book)
+
+    # Verify that the signatures are correct.
+    run_errors = []
+    try:
+        nps = verify_signature(
+            new_engine,
+            run["args"]["base_signature"],
+            threads,
+        )
+    except RunException as e:
+        run_errors.append(str(e))
+    except WorkerException as e:
+        raise e
+
+    tc_factor = BASELINE_NPS / nps
+
+    # Handle exceptions if any.
+    if run_errors:
+        raise RunException("\n".join(run_errors))
+
+    games_name = "data-" + key + ".binpack"
+    games_file[0] = testing_dir / games_name
+    games_file = games_file[0]
+    try:
+        games_file.unlink()
+    except FileNotFoundError:
+        pass
+
+    nodes = run["args"]["nodes"]
+
+    cmd = [
+        new_engine_name,
+        "-o",
+        games_name,
+        "-n",
+        str(nodes),
+        "-t",
+        str(threads),
+        "-g",
+        str(games),
+    ]
+
+    if book is not None and book.endswith(".epd"):
+        cmd.append("-b")
+        cmd.append(book)
+
+    try:
+        with subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+            bufsize=1,
+            # The next options are necessary to be able to send a CTRL_C_EVENT to this process.
+            # https://stackoverflow.com/questions/7085604/sending-c-to-python-subprocess-objects-on-windows
+            startupinfo=(
+                subprocess.STARTUPINFO(
+                    dwFlags=subprocess.STARTF_USESHOWWINDOW,
+                    wShowWindow=subprocess.SW_HIDE,
+                )
+                if IS_WINDOWS
+                else None
+            ),
+            creationflags=subprocess.CREATE_NEW_CONSOLE if IS_WINDOWS else 0,
+            close_fds=not IS_WINDOWS,
+        ) as p:
+            try:
+                parse_datagen_output(p, tc_factor, result, remote, current_state)
+            finally:
+                # We nicely ask cutechess-cli to stop.
+                try:
+                    send_sigint(p)
+                except Exception as e:
+                    print("\nException in send_sigint:\n", e, sep="", file=sys.stderr)
+                # now wait...
+                print("\nWaiting for datagen to finish ... ", end="", flush=True)
+                try:
+                    p.wait(timeout=CUTECHESS_KILL_TIMEOUT)
+                except subprocess.TimeoutExpired:
+                    print("timeout", flush=True)
+                    kill_process(p)
+                else:
+                    print("done", flush=True)
+    except (OSError, subprocess.SubprocessError) as e:
+        print(
+            "Exception starting datagen:\n",
+            e,
+            sep="",
+            file=sys.stderr,
+        )
+        raise WorkerException("Unable to start datagen. Error: {}".format(str(e)))
 
     return
