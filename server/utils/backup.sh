@@ -11,7 +11,7 @@
 
 cd ${HOME}/backup
 for db_name in "montytest_new" "admin" "config" "local"; do
-  mongodump --db=${db_name} --numParallelCollections=1 --excludeCollection="pgns" --gzip
+  mongodump --db=${db_name} --numParallelCollections=1 --excludeCollection="pgns" --excludeCollection="vtd" --gzip
 done
 tar -cvf dump.tar dump
 rm -rf dump
