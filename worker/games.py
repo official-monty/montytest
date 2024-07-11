@@ -503,7 +503,7 @@ def setup_engine(
 
     try:
         blob = cache_read(global_cache, sha + ".zip")
-        
+
         if blob is None:
             item_url = github_api(repo_url) + "/zipball/" + sha
             print("Downloading {}".format(item_url))
@@ -990,7 +990,7 @@ def run_games(
     task_id,
     games_file,
     clear_binaries,
-    global_cache,   
+    global_cache,
 ):
     # This is the main cutechess-cli driver.
     # It is ok, and even expected, for this function to
@@ -1062,6 +1062,7 @@ def run_games(
             worker_info["unique_key"],
             result,
             current_state,
+            global_cache,
         )
         return
 
@@ -1136,7 +1137,7 @@ def run_games(
             remote,
             sha_new,
             repo_url,
-            global_cache,           
+            global_cache,
         )
     if not base_engine.with_suffix(EXE_SUFFIX).exists():
         setup_engine(
@@ -1146,7 +1147,7 @@ def run_games(
             remote,
             sha_base,
             repo_url,
-            global_cache,           
+            global_cache,
         )
 
     os.chdir(testing_dir)

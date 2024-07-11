@@ -756,7 +756,7 @@ def setup_parameters(worker_dir):
                 an existing absolute path to be used to globally cache on disk
                 certain downloads, reducing load on github or net server.
                 A empty string ("") disables using a cache.""",
-    )    
+    )
     parser.add_argument(
         "-C",
         "--compiler",

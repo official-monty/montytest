@@ -97,7 +97,7 @@ class RunDb:
         # Create a lock for each active run
         self.run_lock = threading.Lock()
         self.active_runs = {}
-        
+
         # Keep some data about the workers
         self.worker_runs = {}
         self.worker_runs_lock = threading.Lock()
