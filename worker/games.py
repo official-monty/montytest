@@ -135,6 +135,41 @@ def send_sigint(p):
         p.send_signal(signal.SIGINT)
 
 
+def cache_read(cache, name):
+    """Read a binary blob of data from a global cache on disk, None if not available"""
+    if cache == "":
+        return None
+
+    try:
+        return (Path(cache) / name).read_bytes()
+    except Exception as e:
+        return None
+
+
+def cache_write(cache, name, data):
+    """Write a binary blob of data to a global cache on disk in an atomic way, skip if not available"""
+    if cache == "":
+        return
+
+    try:
+        temp_file = tempfile.NamedTemporaryFile(dir=cache, delete=False)
+        temp_file.write(data)
+        temp_file.flush()
+        os.fsync(temp_file.fileno())  # Ensure data is written to disk
+        temp_file.close()
+
+        # try linking, which is atomic, and will fail if the file exists
+        try:
+            os.link(temp_file.name, Path(cache) / name)
+        except OSError:
+            pass
+
+        # Remove the temporary file
+        os.remove(temp_file.name)
+    except Exception as e:
+        return
+
+
 # See https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
 # for background.
 # It may be useful to introduce more refined http exception handling in the future.
@@ -283,11 +318,18 @@ def required_policy_from_source():
                     return m.group(0)
 
 
-def download_net(remote, testing_dir, net):
-    url = remote + "/api/nn/" + net
-    print("Downloading {}".format(net))
-    r = requests_get(url, allow_redirects=True, timeout=HTTP_TIMEOUT)
-    (testing_dir / net).write_bytes(r.content)
+def download_net(remote, testing_dir, net, global_cache):
+    content = cache_read(global_cache, net)
+
+    if content is None:
+        url = remote + "/api/nn/" + net
+        print("Downloading {}".format(net))
+        content = requests_get(url, allow_redirects=True, timeout=HTTP_TIMEOUT).content
+        cache_write(global_cache, net, content)
+    else:
+        print("Using {} from global cache".format(net))
+
+    (testing_dir / net).write_bytes(content)
 
 
 def validate_net(testing_dir, net):
@@ -295,13 +337,13 @@ def validate_net(testing_dir, net):
     return hash[:12] == net[3:15]
 
 
-def establish_validated_net(remote, testing_dir, net):
+def establish_validated_net(remote, testing_dir, net, global_cache):
     if not (testing_dir / net).exists() or not validate_net(testing_dir, net):
         attempt = 0
         while True:
             try:
                 attempt += 1
-                download_net(remote, testing_dir, net)
+                download_net(remote, testing_dir, net, global_cache)
                 if not validate_net(testing_dir, net):
                     raise WorkerException(
                         "Failed to validate the network: {}".format(net)
@@ -447,27 +489,41 @@ def convert_book_move_counters(book_file):
 
 
 def setup_engine(
-    destination, worker_dir, testing_dir, remote, sha, repo_url, datagen=False
+    destination,
+    worker_dir,
+    testing_dir,
+    remote,
+    sha,
+    repo_url,
+    global_cache,
+    datagen=False,
 ):
     """Download and build sources in a temporary directory then move exe to destination"""
     tmp_dir = Path(tempfile.mkdtemp(dir=worker_dir))
 
     try:
-        item_url = github_api(repo_url) + "/zipball/" + sha
-        print("Downloading {}".format(item_url))
-        blob = requests_get(item_url).content
+        blob = cache_read(global_cache, sha + ".zip")
+        
+        if blob is None:
+            item_url = github_api(repo_url) + "/zipball/" + sha
+            print("Downloading {}".format(item_url))
+            blob = requests_get(item_url).content
+            cache_write(global_cache, sha + ".zip", blob)
+        else:
+            print("Using {} from global cache".format(sha + ".zip"))
+
         file_list = unzip(blob, tmp_dir)
         prefix = os.path.commonprefix([n.filename for n in file_list])
         os.chdir(tmp_dir / prefix)
 
         evalfile = required_value_from_source()
         print("Build uses default value net:", evalfile)
-        establish_validated_net(remote, testing_dir, evalfile)
+        establish_validated_net(remote, testing_dir, evalfile, global_cache)
         shutil.copyfile(testing_dir / evalfile, evalfile)
 
         policyfile = required_policy_from_source()
         print("Build uses default policy net:", policyfile)
-        establish_validated_net(remote, testing_dir, policyfile)
+        establish_validated_net(remote, testing_dir, policyfile, global_cache)
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
         cmd = ["make", "gen" if datagen else "montytest", f"EXE={destination}"]
@@ -934,6 +990,7 @@ def run_games(
     task_id,
     games_file,
     clear_binaries,
+    global_cache,   
 ):
     # This is the main cutechess-cli driver.
     # It is ok, and even expected, for this function to
@@ -1079,6 +1136,7 @@ def run_games(
             remote,
             sha_new,
             repo_url,
+            global_cache,           
         )
     if not base_engine.with_suffix(EXE_SUFFIX).exists():
         setup_engine(
@@ -1088,6 +1146,7 @@ def run_games(
             remote,
             sha_base,
             repo_url,
+            global_cache,           
         )
 
     os.chdir(testing_dir)
@@ -1419,6 +1478,7 @@ def run_datagen_games(
     key,
     result,
     current_state,
+    global_cache,
 ):
     sha_new = run["args"]["resolved_new"]
     new_engine_name = "monty_datagen_" + sha_new
@@ -1438,6 +1498,7 @@ def run_datagen_games(
             remote,
             sha_new,
             repo_url,
+            global_cache,
             datagen=True,
         )
 
