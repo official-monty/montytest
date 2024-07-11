@@ -118,7 +118,7 @@
               <span class="${'rounded ltc-highlight me-1' if is_active_sprt_ltc(run) else 'me-1'}">
               % if 'sprt' in run['args']:
                 <a href="/tests/live_elo/${str(run['_id'])}" target="_blank">sprt</a>
-              % elif 'datagen' in run['args']:
+              % elif 'datagen' in run['args'] and run['args'].get('datagen', False):
                 datagen
               % else:
                 ${run['args']['num_games']}
