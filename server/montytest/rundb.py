@@ -926,15 +926,30 @@ class RunDb:
                     concurrency = int(task["worker_info"]["concurrency"])
                     nps += concurrency * task["worker_info"]["nps"]
                     if task["worker_info"]["nps"] != 0:
-                        games_per_minute += (
-                            (task["worker_info"]["nps"] / 184087)
-                            * (60.0 / estimate_game_duration(run["args"]["tc"]))
-                            * (
-                                int(task["worker_info"]["concurrency"])
-                                // run["args"].get("threads", 1)
+                        if "datagen" in task["worker_info"] and task["worker_info"].get(
+                            "datagen", False
+                        ):
+                            games_per_minute += (
+                                (task["worker_info"]["nps"] / 184087)
+                                * (
+                                    60.0
+                                    / (
+                                        task["worker_info"]["nodes"]
+                                        * 111
+                                        / (184087 / 2)
+                                    )
+                                )
+                                * (int(task["worker_info"]["concurrency"]))
                             )
-                        )
-
+                        else:
+                            games_per_minute += (
+                                (task["worker_info"]["nps"] / 184087)
+                                * (60.0 / estimate_game_duration(run["args"]["tc"]))
+                                * (
+                                    int(task["worker_info"]["concurrency"])
+                                    // run["args"].get("threads", 1)
+                                )
+                            )
         pending_hours = 0
         for run in runs["pending"] + runs["active"]:
             if cores > 0:

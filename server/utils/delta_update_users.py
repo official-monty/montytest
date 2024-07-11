@@ -52,7 +52,7 @@ def compute_games_rates(rundb, info_tuple):
         ):
             games_per_hour = (
                 (machine["nps"] / 184087)
-                * (3600.0 / (machine["run"]["args"]["nodes"] * 111 / 184087))
+                * (3600.0 / (machine["run"]["args"]["nodes"] * 111 / (184087 / 2)))
                 * (int(machine["concurrency"]))
             )
         else:
@@ -80,7 +80,7 @@ def process_run(run, info):
     # Update the information for the workers contributed by the users
     if "datagen" in run["args"] and run["args"].get("datagen", False):
         BASELINE_NPS = 184087
-        adjusted_tc = run["args"]["nodes"] * 111 / BASELINE_NPS
+        adjusted_tc = run["args"]["nodes"] * 111 / (BASELINE_NPS / 2)
     else:
         adjusted_tc = estimate_game_duration(run["args"]["tc"]) * int(
             run["args"].get("threads", 1)
