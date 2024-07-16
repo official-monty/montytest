@@ -1581,7 +1581,7 @@ def worker():
     if monty_exit:
         print("Removing monty.exit file")
         (worker_dir / "monty.exit").unlink()
-        
+
     print("Releasing the worker lock")
     worker_lock.release()
 

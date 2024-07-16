@@ -21,7 +21,7 @@ from montytest.util import (
     get_hash,
     get_tc_ratio,
     github_repo_valid,
-    is_sprt_ltc_data,    
+    is_sprt_ltc_data,
     password_strength,
     update_residuals,
 )
