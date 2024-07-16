@@ -247,7 +247,7 @@ def format_bounds(elo_model, elo0, elo1):
 
 def format_results(run):
     run_results = run["results"]
-    
+
     result = {"style": "", "info": []}
 
     # win/loss/draw count
