@@ -1583,6 +1583,9 @@ def run_datagen_games(
         ) as p:
             try:
                 parse_datagen_output(p, tc_factor, result, remote, current_state)
+            except:
+                #Remove the binpack on exception
+                games_file = None;
             finally:
                 # We nicely ask cutechess-cli to stop.
                 try:
