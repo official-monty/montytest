@@ -1524,12 +1524,12 @@ def run_datagen_games(
             run["args"]["base_signature"],
             threads,
         )
+        tc_factor = BASELINE_NPS / nps
+        result["worker_info"]["nps"] = float(nps)
     except RunException as e:
         run_errors.append(str(e))
     except WorkerException as e:
         raise e
-
-    tc_factor = BASELINE_NPS / nps
 
     # Handle exceptions if any.
     if run_errors:
@@ -1584,8 +1584,10 @@ def run_datagen_games(
             try:
                 parse_datagen_output(p, tc_factor, result, remote, current_state)
             except:
-                #Remove the binpack on exception
-                games_file = None;
+                # Remove the binpack on exception
+                print("Removing binpack", flush=True)
+                if games_file.exists():
+                    games_file.unlink()
             finally:
                 # We nicely ask cutechess-cli to stop.
                 try:
