@@ -922,7 +922,7 @@ class RunDb:
                         ):
                             games_per_minute += (
                                 (task["worker_info"]["nps"] / 184087)
-                                * (60.0 / (run["args"]["nodes"] * 111 / (184087 / 2)))
+                                * (60.0 / (run["args"]["nodes"] * 111 / 184087))
                                 * (int(task["worker_info"]["concurrency"]))
                             )
                         else:

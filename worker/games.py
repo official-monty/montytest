@@ -1392,7 +1392,7 @@ def parse_datagen_output(p, tc_factor, result, remote, current_state):
     t_error = threading.Thread(target=enqueue_output, args=(p.stderr, q), daemon=True)
     t_error.start()
 
-    tc_limit = tc_factor * 1800 * 1.6  # Allow 60% more time before excepting
+    tc_limit = tc_factor * 1800
     end_time = datetime.now(timezone.utc) + timedelta(seconds=tc_limit)
     print("TC limit {} End time: {}".format(tc_limit, end_time))
 
@@ -1524,8 +1524,8 @@ def run_datagen_games(
             run["args"]["base_signature"],
             threads,
         )
-        tc_factor = BASELINE_NPS / nps
-        result["worker_info"]["nps"] = float(nps)
+        tc_factor = BASELINE_NPS / (nps / 4)
+        result["worker_info"]["nps"] = float(nps / 4)
     except RunException as e:
         run_errors.append(str(e))
     except WorkerException as e:
