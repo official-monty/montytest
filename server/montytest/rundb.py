@@ -1212,7 +1212,7 @@ After fixing the issues you can unblock the worker at
             # probably due to cutechess-cli as discussed in issue #822,
             # assign linux workers to LTC or multi-threaded jobs
             # and windows workers only to LTC jobs
-            if max_threads >= 29:
+            if max_threads > 32:
                 if "windows" in worker_info["uname"].lower():
                     tc_too_short = get_tc_ratio(run["args"]["tc"], base="55+0.5") < 1.0
                 else:
