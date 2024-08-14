@@ -24,7 +24,7 @@ from zipfile import ZipFile
 
 import requests
 
-BASELINE_NPS = 184087
+BASELINE_NPS = 198243
 IS_WINDOWS = "windows" in platform.system().lower()
 IS_MACOS = "darwin" in platform.system().lower()
 LOGFILE = "api.log"

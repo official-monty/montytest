@@ -909,6 +909,7 @@ class RunDb:
         nps = 0
         games_per_minute = 0.0
         machines_count = 0
+        BASELINE_NPS = 198243
         for run in runs["active"]:
             machines_count += run["workers"]
             cores += run["cores"]
@@ -921,13 +922,13 @@ class RunDb:
                             "datagen", False
                         ):
                             games_per_minute += (
-                                (task["worker_info"]["nps"] / 184087)
-                                * (60.0 / (run["args"]["nodes"] * 111 / 184087))
+                                (task["worker_info"]["nps"] / BASELINE_NPS)
+                                * (60.0 / (run["args"]["nodes"] * 111 / BASELINE_NPS))
                                 * (int(task["worker_info"]["concurrency"]))
                             )
                         else:
                             games_per_minute += (
-                                (task["worker_info"]["nps"] / 184087)
+                                (task["worker_info"]["nps"] / BASELINE_NPS)
                                 * (60.0 / estimate_game_duration(run["args"]["tc"]))
                                 * (
                                     int(task["worker_info"]["concurrency"])
