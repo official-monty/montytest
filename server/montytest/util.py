@@ -454,8 +454,8 @@ def remaining_hours(run):
         expected_games = run["args"]["num_games"]
         remaining_games = max(0, expected_games - r["wins"] - r["losses"] - r["draws"])
         if "datagen" in run["args"] and run["args"]["datagen"] is True:
-            BASELINE_NPS = 184087  # Baseline NPS remember to adjust
-            game_secs = run["args"]["nodes"] * 111 / (BASELINE_NPS / 2)
+            BASELINE_NPS = 198243  # Baseline NPS remember to adjust
+            game_secs = run["args"]["nodes"] * 137 / (BASELINE_NPS / 4)
             threads = 1
         else:
             game_secs = estimate_game_duration(run["args"]["tc"])

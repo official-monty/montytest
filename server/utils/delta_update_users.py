@@ -47,17 +47,18 @@ def initialize_info(rundb, clear_stats):
 def compute_games_rates(rundb, info_tuple):
     # use the reference core nps, also set in rundb.py and games.py
     for machine in rundb.get_machines():
+        BASELINE_NPS = 198243
         if "datagen" in machine["run"]["args"] and machine["run"]["args"].get(
             "datagen", False
         ):
             games_per_hour = (
-                (machine["nps"] / 184087)
-                * (3600.0 / (machine["run"]["args"]["nodes"] * 111 / (184087 / 2)))
+                (machine["nps"] / BASELINE_NPS)
+                * (3600.0 / (machine["run"]["args"]["nodes"] * 137 / BASELINE_NPS))
                 * (int(machine["concurrency"]))
             )
         else:
             games_per_hour = (
-                (machine["nps"] / 184087)
+                (machine["nps"] / BASELINE_NPS)
                 * (3600.0 / estimate_game_duration(machine["run"]["args"]["tc"]))
                 * (
                     int(machine["concurrency"])
@@ -79,8 +80,8 @@ def process_run(run, info):
 
     # Update the information for the workers contributed by the users
     if "datagen" in run["args"] and run["args"].get("datagen", False):
-        BASELINE_NPS = 184087
-        adjusted_tc = run["args"]["nodes"] * 111 / (BASELINE_NPS / 2)
+        BASELINE_NPS = 198243
+        adjusted_tc = run["args"]["nodes"] * 137 / (BASELINE_NPS / 4)
     else:
         adjusted_tc = estimate_game_duration(run["args"]["tc"]) * int(
             run["args"].get("threads", 1)
