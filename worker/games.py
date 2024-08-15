@@ -406,12 +406,13 @@ def verify_signature(engine, signature, active_cores):
     bench_nps = 0.0
 
     for sig, nps in results:
-        bench_nps += nps
 
-        if sig is None or bench_nps is None:
+        if sig is None or nps is None:
             raise RunException(
                 "Unable to parse bench output of {}".format(os.path.basename(engine))
             )
+
+        bench_nps += nps
 
         if int(sig) != int(signature):
             message = "Wrong bench in {}, user expected: {} but worker got: {}".format(
