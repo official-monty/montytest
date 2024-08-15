@@ -1043,7 +1043,7 @@ class RunDb:
             games = max(batch_size, batch_size * int(games / batch_size + 1 / 2))
         elif "datagen" in run["args"] and run["args"].get("datagen", False):
             BASELINE_NPS = 198243  # Baseline NPS remember to adjust
-            game_time = run["args"]["nodes"] * 137 / (BASELINE_NPS / 4)
+            game_time = run["args"]["nodes"] * 137 / (BASELINE_NPS / 5)
             games = self.task_duration / game_time * worker_info["concurrency"]
             games = max(2, 2 * int(games / 2 + 1 / 2))
         else:
