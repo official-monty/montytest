@@ -409,9 +409,7 @@ def verify_signature(engine, signature, active_cores):
 
         if sig is None or nps is None:
             raise RunException(
-                "Unable to parse bench output of {}. Received signature: {}, nps: {}".format(
-                    os.path.basename(engine), sig, nps
-                )
+                "Unable to parse bench output of {}".format(os.path.basename(engine))
             )
 
         bench_nps += nps
