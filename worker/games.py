@@ -1242,9 +1242,8 @@ def run_games(
     result["worker_info"]["nps"] = float(base_nps)
 
     threads_cmd = []
-    # This is disabled for now because monty doesn't have the Threads option
-    # if not any("Threads" in s for s in new_options + base_options):
-    #     threads_cmd = ["option.Threads={}".format(threads)]
+    if not any("Threads" in s for s in new_options + base_options):
+        threads_cmd = ["option.Threads={}".format(threads)]
 
     # If nodestime is being used, give engines extra grace time to
     # make time losses virtually impossible.

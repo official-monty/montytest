@@ -65,7 +65,7 @@ LOCK_FILE = Path(__file__).resolve().parent / "worker.lock"
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 8
+WORKER_VERSION = 9
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
