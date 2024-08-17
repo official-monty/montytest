@@ -1,6 +1,7 @@
-# List of authors for montytest, as of December 14, 2023
+# List of authors for montytest, as of August 17, 2024
 
 Gary Linscott (glinscott)
+Viren (Viren)
 
 Andy Pilate (Cubox)
 Bojun Guo (noobpwnftw)
@@ -14,6 +15,7 @@ Fanael Linithien (Fanael)
 Fauzi Akram Dabat (FauziAkram)
 FieryDragonLord
 Gabe (MrBrain295)
+Gahtan Nahdi (gahtan-syarif)
 Giacomo Lorenzetti (G-Lorenz)
 Gian-Carlo Pascutto (gcp)
 Henri Wiechers (hwiechers)
@@ -55,8 +57,7 @@ Vince Negri (cuddlestmonkey)
 Werner Fenchel (wfenchel)
 
 Thanks to:
-Ilari Pihlajisto - https://github.com/cutechess/cutechess, which drives all the games!
-Tord Romstad - for Glaurung
+Disservin - https://github.com/Disservin/fastchess, which drives all the games!
 Dariusz Orzechowski - opening book idea (perft generation + position score filtering)
 Stefan Pohl - Unbalanced Human Openings books
 https://flag-sprites.com - for the great flag sprites

@@ -1,4 +1,4 @@
-name: CI worker cargo
+name: CI worker msys2
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -6,16 +6,28 @@ jobs:
   test:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
-        toolchain: [stable, beta, nightly]
+        include:
+          - { sys: mingw64, env: x86_64,       comp: gcc }
     defaults:
       run:
-        shell: bash
+        shell: msys2 {0}
         working-directory: worker
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Setup msys and install required packages
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: ${{ matrix.sys }}
+          install: >-
+            make
+            mingw-w64-${{ matrix.env }}-python3
+            mingw-w64-${{ matrix.env }}-${{ matrix.comp }}
+            mingw-w64-x86_64-rust
+
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
