@@ -927,7 +927,7 @@ class RunDb:
                             "datagen", False
                         ):
                             games_per_minute += (
-                                (task["worker_info"]["nps"] / BASELINE_NPS)
+                                ((task["worker_info"]["nps"] / 4) / BASELINE_NPS)
                                 * (60.0 / (run["args"]["nodes"] * 137 / BASELINE_NPS))
                                 * (int(task["worker_info"]["concurrency"]))
                             )

@@ -1532,7 +1532,7 @@ def run_datagen_games(
             threads,
         )
         tc_factor = BASELINE_NPS / (nps / 4)
-        result["worker_info"]["nps"] = float(nps / 4)
+        result["worker_info"]["nps"] = nps
     except RunException as e:
         run_errors.append(str(e))
     except WorkerException as e:

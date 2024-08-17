@@ -52,7 +52,7 @@ def compute_games_rates(rundb, info_tuple):
             "datagen", False
         ):
             games_per_hour = (
-                (machine["nps"] / BASELINE_NPS)
+                ((machine["nps"] / 4) / BASELINE_NPS)
                 * (3600.0 / (machine["run"]["args"]["nodes"] * 137 / BASELINE_NPS))
                 * (int(machine["concurrency"]))
             )
