@@ -1325,7 +1325,40 @@ def run_games(
     return
 
 
-def parse_datagen_output(p, tc_factor, result, remote, current_state):
+def send_datagen_result(result, remote, current_state):
+    update_succeeded = False
+    for _ in range(5):
+        try:
+            response = send_api_post_request(remote + "/api/update_task", result)
+            if "error" in response:
+                break
+        except Exception as e:
+            print(
+                "Exception calling update_task:\n",
+                e,
+                sep="",
+                file=sys.stderr,
+            )
+            if isinstance(e, FatalException):  # signal
+                raise e
+        else:
+            if not response["task_alive"]:
+                # This task is no longer necessary
+                print(
+                    "The server told us that no more games"
+                    " are needed for the current task."
+                )
+                return False
+            update_succeeded = True
+            break
+        time.sleep(UPDATE_RETRY_TIME)
+    if not update_succeeded:
+        raise WorkerException("Too many failed update attempts")
+    else:
+        current_state["last_updated"] = datetime.now(timezone.utc)
+
+
+def parse_datagen_output(p, tc_factor, result):
     saved_stats = copy.deepcopy(result["stats"])
 
     q = Queue()
@@ -1377,38 +1410,7 @@ def parse_datagen_output(p, tc_factor, result, remote, current_state):
     )
     result["stats"]["pentanomial"][3] = max(winLossDiff, 0)
 
-    update_succeeded = False
-    for _ in range(5):
-        try:
-            response = send_api_post_request(remote + "/api/update_task", result)
-            if "error" in response:
-                break
-        except Exception as e:
-            print(
-                "Exception calling update_task:\n",
-                e,
-                sep="",
-                file=sys.stderr,
-            )
-            if isinstance(e, FatalException):  # signal
-                raise e
-        else:
-            if not response["task_alive"]:
-                # This task is no longer necessary
-                print(
-                    "The server told us that no more games"
-                    " are needed for the current task."
-                )
-                return False
-            update_succeeded = True
-            break
-        time.sleep(UPDATE_RETRY_TIME)
-    if not update_succeeded:
-        raise WorkerException("Too many failed update attempts")
-    else:
-        current_state["last_updated"] = datetime.now(timezone.utc)
-
-    return True
+    return result
 
 
 def run_datagen_games(
@@ -1519,7 +1521,7 @@ def run_datagen_games(
             close_fds=not IS_WINDOWS,
         ) as p:
             try:
-                parse_datagen_output(p, tc_factor, result, remote, current_state)
+                result = parse_datagen_output(p, tc_factor, result)
             except:
                 # Remove the binpack on exception
                 print("Removing binpack", flush=True)
@@ -1535,6 +1537,19 @@ def run_datagen_games(
                 print("\nWaiting for datagen to finish ... ", end="", flush=True)
                 try:
                     p.wait(timeout=FASTCHESS_KILL_TIMEOUT)
+                    # Check the return code of the process
+                    if p.returncode != 0:
+                        print(
+                            f"Datagen process exited with code {p.returncode}. Removing binpack.",
+                            flush=True,
+                        )
+                        if games_file.exists():
+                            games_file.unlink()
+                        raise WorkerException(
+                            f"Datagen process exited with non-zero return code: {p.returncode}"
+                        )
+                    else:
+                        send_datagen_result(result, remote, current_state)
                 except subprocess.TimeoutExpired:
                     print("timeout", flush=True)
                     kill_process(p)
