@@ -104,7 +104,6 @@
       with error probabilities &alpha; and &beta;. If the true Elo is less than
       Elo0 then the probability of the test passing is less than &alpha;. On the
       other hand if the true Elo is more than Elo1 then the pass probability is
-      other hand if the true Elo is more than Elo1 then the pass probability is
       more than (1-&beta;).
     </li>
     <li>
