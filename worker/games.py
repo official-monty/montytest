@@ -386,8 +386,12 @@ def run_single_bench(engine, queue):
                 bench_nps = float(spl[3].strip())
 
         queue.put((bench_sig, bench_nps))
-    except:
-        queue.put((None, None))
+    except Exception as e:
+        raise RunException(
+            "Unable to parse bench output of {}. Error occurred while processing line: '{}'. Error: {}".format(
+                os.path.basename(engine), line, e
+            )
+        )
 
 
 def verify_signature(engine, signature, active_cores):
@@ -408,11 +412,6 @@ def verify_signature(engine, signature, active_cores):
     bench_nps = 0.0
 
     for sig, nps in results:
-
-        if sig is None or nps is None:
-            raise RunException(
-                "Unable to parse bench output of {}".format(os.path.basename(engine))
-            )
 
         bench_nps += nps
 
