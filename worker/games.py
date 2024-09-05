@@ -1253,7 +1253,7 @@ def run_games(
                 "penta=true",
             ]
             + pgnout
-            + ["-site", "https://montychess.org/tests/view/" + run["_id"]]
+            + ["-site", "https://tests.montychess.org/tests/view/" + run["_id"]]
             + [
                 "-event",
                 "Batch {}: {} vs {}".format(

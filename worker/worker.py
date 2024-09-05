@@ -69,7 +69,7 @@ LOCK_FILE = Path(__file__).resolve().parent / "worker.lock"
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 25
+WORKER_VERSION = 26
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
@@ -110,7 +110,7 @@ games.py  :             parse_fastchess_output()
 Apis used by the worker
 =======================
 
-<montytest>     = https://montychess.org
+<montytest>     = https://tests.montychess.org
 <github>       = https://api.github.com
 <github-books> = <github>/repos/official-monty/books
 
@@ -652,7 +652,7 @@ def setup_parameters(worker_dir):
         ("login", "username", "", str, None),
         ("login", "password", "", str, None),
         ("parameters", "protocol", "https", ["http", "https"], None),
-        ("parameters", "host", "montychess.org", str, None),
+        ("parameters", "host", "tests.montychess.org", str, None),
         ("parameters", "port", "443", int, None),
         (
             "parameters",

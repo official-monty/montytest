@@ -150,7 +150,7 @@ function notify(title, body, link, fallback) {
     const notification = new Notification(title, {
       body: body,
       requireInteraction: true,
-      icon: "https://montychess.org/img/monty.png",
+      icon: "https://tests.montychess.org/img/monty.png",
     });
     notification.onclick = () => {
       window.open(link, "_blank");

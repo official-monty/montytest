@@ -2,7 +2,7 @@
 Montytest is a fishtest derivative: https://github.com/official-stockfish/fishtest
 
 Montytest is a distributed task queue for testing chess engines. The main instance
-for testing the chess engine [Monty](https://github.com/official-monty/Monty) is at this web page https://montychess.org
+for testing the chess engine [Monty](https://github.com/official-monty/Monty) is at this web page https://tests.montychess.org
 
 Developers submit patches with new ideas and improvements, CPU contributors install a montytest worker on their computers to play some chess games in the background to help the developers testing the patches.
 
