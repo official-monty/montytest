@@ -69,7 +69,7 @@ LOCK_FILE = Path(__file__).resolve().parent / "worker.lock"
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 26
+WORKER_VERSION = 27
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
@@ -454,7 +454,7 @@ def setup_fastchess(worker_dir, compiler, concurrency, global_cache):
     testing_dir = worker_dir / "testing"
     testing_dir.mkdir(exist_ok=True)
 
-    fastchess_sha = "3564c85837060d9a39baac2257e6e43456de84df"
+    fastchess_sha = "1dbe24c0ebc9d39e8128e64a264d08228dd70524"
     username = "Disservin"
 
     fastchess = "fastchess" + EXE_SUFFIX
