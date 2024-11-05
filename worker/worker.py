@@ -69,7 +69,7 @@ LOCK_FILE = Path(__file__).resolve().parent / "worker.lock"
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 27
+WORKER_VERSION = 28
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
@@ -824,11 +824,11 @@ def setup_parameters(worker_dir):
         options.port = 443
 
     # Limit concurrency so that at least STC tests can run with the evailable memory
-    # The memory need per engine is 16 for the TT Hash, 10 for the process 138 for the net and 16 per thread
+    # The memory need per engine is 16 for the TT Hash, 10 for the process 100 for the net and 16 per thread
     # 60 is the need for fastchess-cli
     # These numbers need to be up-to-date with the server values
-    STC_memory = 2 * (16 + 10 + 138 + 16)
-    max_concurrency = int((options.max_memory - 60) / STC_memory)
+    STC_memory = 2 * (16 + 10 + 16)
+    max_concurrency = int((options.max_memory - 60) / (STC_memory + 100))
     if max_concurrency < 1:
         print(
             "You need to reserve at least {} MiB to run the worker!".format(STC_memory)

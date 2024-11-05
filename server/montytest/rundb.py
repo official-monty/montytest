@@ -1215,12 +1215,10 @@ After fixing the issues you can unblock the worker at
             need_tt *= max_threads // run["args"]["threads"]
             # Needed for cutechess-cli with the fairly large UHO_Lichess_4852_v1.epd opening book
             need_base = 60
-            # estimate another 10MB per process, 16MB per thread, and 132+6MB for large and small net
+            # estimate another 10MB per process, 16MB per thread, and 100MB for net
             # Note that changes here need the corresponding worker change to STC_memory, which limits concurrency
-            need_base += (
-                2
-                * (max_threads // run["args"]["threads"])
-                * (10 + 138 + 16 * run["args"]["threads"])
+            need_base += 100 + 2 * (max_threads // run["args"]["threads"]) * (
+                10 + 16 * run["args"]["threads"]
             )
 
             if need_base + need_tt > max_memory:
