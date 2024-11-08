@@ -15,7 +15,7 @@
   pt_branch = pt_info["pt_branch"]
   pt_signature = pt_info["pt_bench"]
 
-  tc = args.get('tc', '40+0.4')
+  tc = args.get('tc', '20+0.2')
   new_tc = args.get('new_tc', tc)
 
   default_book = args.get('book', test_book)
@@ -59,8 +59,8 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="stc_test"
                       data-options='{
                         "name": "STC",
-                        "tc": "40+0.4",
-                        "new_tc": "40+0.4",
+                        "tc": "20+0.2",
+                        "new_tc": "20+0.2",
                         "throughput": "100",
                         "threads": 1,
                         "options": "Hash=16",
@@ -80,8 +80,8 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="ltc_test"
                       data-options='{
                         "name": "LTC",
-                        "tc": "240+2.4",
-                        "new_tc": "240+2.4",
+                        "tc": "120+1.2",
+                        "new_tc": "120+1.2",
                         "throughput": "100",
                         "threads": 1,
                         "options": "Hash=64",
@@ -98,8 +98,8 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="stc_smp_test"
                       data-options='{
                         "name": "STC SMP",
-                        "tc": "12+0.12",
-                        "new_tc": "12+0.12",
+                        "tc": "6+0.06",
+                        "new_tc": "6+0.06",
                         "throughput": "100",
                         "threads": 15,
                         "options": "Hash=64",
@@ -116,8 +116,8 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="ltc_smp_test"
                       data-options='{
                         "name": "LTC SMP",
-                        "tc": "48+0.48",
-                        "new_tc": "48+0.48",
+                        "tc": "24+0.24",
+                        "new_tc": "24+0.24",
                         "throughput": "100",
                         "threads": 15,
                         "options": "Hash=256",
@@ -134,11 +134,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="vltc_test"
                       data-options='{
                         "name": "VLTC",
-                        "tc": "240+2.4",
-                        "new_tc": "240+2.4",
+                        "tc": "120+1.2",
+                        "new_tc": "120+1.2",
                         "throughput": "50",
                         "threads": 3,
-                        "options": "Hash=192",
+                        "options": "Hash=128",
                         "book": "${test_book}",
                         "stop_rule": "stop-rule-sprt",
                         "bounds": "standard STC"
@@ -152,8 +152,8 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="vltc_smp_test"
                       data-options='{
                         "name": "VLTC SMP",
-                        "tc": "400+4",
-                        "new_tc": "400+4",
+                        "tc": "200+2",
+                        "new_tc": "200+2",
                         "throughput": "50",
                         "threads": 5,
                         "options": "Hash=256",
@@ -170,8 +170,8 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="pt_test"
                       data-options='{
                         "name": "PT",
-                        "tc": "240+2.4",
-                        "new_tc": "240+2.4",
+                        "tc": "120+1.2",
+                        "new_tc": "120+1.2",
                         "throughput": "100",
                         "threads": 1,
                         "options": "Hash=64",
@@ -192,11 +192,11 @@
                     <input class="list-group-item-check pe-none" type="radio" name="test-type" id="pt_smp_test"
                       data-options='{
                         "name": "PT SMP",
-                        "tc": "400+4",
-                        "new_tc": "400+4",
+                        "tc": "200+2",
+                        "new_tc": "200+2",
                         "throughput": "100",
                         "threads": 5,
-                        "options": "Hash=512",
+                        "options": "Hash=256",
                         "book": "${pt_book}",
                         "stop_rule": "stop-rule-games",
                         "games": 60000,
@@ -543,7 +543,7 @@
                     name="tc"
                     id="tc"
                     class="form-control"
-                    value="${args.get('tc', '40+0.4')}"
+                    value="${args.get('tc', '20+0.2')}"
                   >
                 </div>
                 <div class="col mb-2 nodes" style="display: none;">
@@ -563,7 +563,7 @@
                     name="new_tc"
                     id="new_tc"
                     class="form-control"
-                    value="${args.get('new_tc', '40+0.4')}"
+                    value="${args.get('new_tc', '20+0.2')}"
                   >
                 </div>
                 <div class="col mb-2">
@@ -1061,18 +1061,18 @@
   if (isRun) {
     // Select the correct fields by default for re-runs
     const tc = '${args.get('tc')}';
-    if (tc === "40+0.4") {
+    if (tc === "20+0.2") {
       document.getElementById("stc_test").checked = true;
-    } else if (tc === "12+0.12") {
+    } else if (tc === "6+0.06") {
       document.getElementById("stc_smp_test").checked = true;
-    } else if (tc === "48+0.48") {
+    } else if (tc === "24+0.24") {
       document.getElementById("ltc_smp_test").checked = true;
-    } else if (tc === "400+4") {
+    } else if (tc === "200+2") {
       document.getElementById("vltc_smp_test").checked = true;
     }
 
     const threads = '${args.get('threads')}';
-    if (tc === "240+2.4") {
+    if (tc === "120+1.2") {
       if (threads === "1") {
         document.getElementById("ltc_test").checked = true;
       } else if (threads === "3") {
