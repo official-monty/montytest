@@ -69,7 +69,7 @@ LOCK_FILE = Path(__file__).resolve().parent / "worker.lock"
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 30
+WORKER_VERSION = 31
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
@@ -494,10 +494,10 @@ def setup_fastchess(worker_dir, compiler, concurrency, global_cache):
 
         # Divide concurrency by 2 so compiling doesn't fail on low memory workers
         cmds = [
-            f"make -j{int(concurrency / 2)} tests CXX=g++ GIT_SHA={fastchess_sha[0:8]} GIT_DATE=01010101",
+            f"make -j{max(1, concurrency // 2)} tests CXX=g++ GIT_SHA={fastchess_sha[0:8]} GIT_DATE=01010101",
             str(tmp_dir / prefix / ("fastchess-tests" + EXE_SUFFIX)),
             "make clean",
-            f"make -j{int(concurrency / 2)} CXX=g++ GIT_SHA={fastchess_sha[0:8]} GIT_DATE=01010101",
+            f"make -j{max(1, concurrency // 2)} CXX=g++ GIT_SHA={fastchess_sha[0:8]} GIT_DATE=01010101",
         ]
 
         for cmd in cmds:

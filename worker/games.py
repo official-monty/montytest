@@ -413,8 +413,6 @@ def verify_signature(engine, signature, active_cores):
 
     for sig, nps in results:
 
-        bench_nps += nps
-
         if int(sig) != int(signature):
             message = "Wrong bench in {}, user expected: {} but worker got: {}".format(
                 os.path.basename(engine),
@@ -422,6 +420,8 @@ def verify_signature(engine, signature, active_cores):
                 sig,
             )
             raise RunException(message)
+
+        bench_nps += nps
 
     bench_nps /= active_cores
 
