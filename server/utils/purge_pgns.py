@@ -6,7 +6,7 @@ from montytest.rundb import RunDb
 from pymongo import DESCENDING
 
 
-def purge_pgns(rundb, finished, deleted, days, days_ltc=60):
+def purge_pgns(rundb, finished, deleted, days, days_ltc=10):
     kept_runs = kept_tasks = kept_pgns = 0
     purged_runs = purged_tasks = purged_pgns = 0
     now = datetime.now(timezone.utc)
@@ -16,7 +16,7 @@ def purge_pgns(rundb, finished, deleted, days, days_ltc=60):
     runs_query = {
         "finished": finished,
         "deleted": deleted,
-        "last_updated": {"$gte": now - timedelta(days=60)},
+        "last_updated": {"$gte": now - timedelta(days=360)},
     }
     for run in rundb.db.runs.find(runs_query, sort=[("last_updated", DESCENDING)]):
         keep = (
@@ -39,6 +39,7 @@ def purge_pgns(rundb, finished, deleted, days, days_ltc=60):
             kept_pgns += pgns_count
         else:
             rundb.pgndb.delete_many(pgns_query)
+            rundb.vtddb.delete_many(pgns_query)
             purged_tasks += tasks_count
             purged_pgns += pgns_count
 
@@ -70,20 +71,23 @@ def report(
 def main():
     # Process the runs in descending order of last_updated for the
     # last 60 days and purge the pgns collection for:
-    # - runs that are finished and not deleted, and older than 1 days for STC
+    # - runs that are finished and not deleted, and older than 10 days for STC
     # - runs that are finished and not deleted, and older than 10 days for LTC
     # - runs that are finished and deleted, and older than 10 days
     # - runs that are not finished and not deleted, and older than 50 days
 
     rundb = RunDb()
-    out = purge_pgns(rundb=rundb, finished=True, deleted=False, days=1, days_ltc=10)
+    out = purge_pgns(rundb=rundb, finished=True, deleted=False, days=10, days_ltc=10)
     report("Finished runs:", *out)
     out = purge_pgns(rundb=rundb, finished=True, deleted=True, days=10)
     report("Deleted runs:", *out)
-    out = purge_pgns(rundb=rundb, finished=False, deleted=False, days=50)
+    out = purge_pgns(rundb=rundb, finished=False, deleted=False, days=10)
     report("Unfinished runs:", *out)
+    out = purge_pgns(rundb=rundb, finished=False, deleted=True, days=10)
     msg = rundb.db.command({"compact": "pgns"})
     print(msg)
+    msg_vtd = rundb.db.command({"compact": "vtd"})
+    print(msg_vtd)
 
 
 if __name__ == "__main__":
