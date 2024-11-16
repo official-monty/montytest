@@ -6,7 +6,7 @@ from montytest.rundb import RunDb
 from pymongo import DESCENDING
 
 
-def purge_pgns(rundb, finished, deleted, days, days_ltc=10):
+def purge_pgns(rundb, finished, deleted, days, days_ltc=50):
     kept_runs = kept_tasks = kept_pgns = 0
     purged_runs = purged_tasks = purged_pgns = 0
     now = datetime.now(timezone.utc)
@@ -77,13 +77,13 @@ def main():
     # - runs that are not finished and not deleted, and older than 50 days
 
     rundb = RunDb()
-    out = purge_pgns(rundb=rundb, finished=True, deleted=False, days=10, days_ltc=10)
+    out = purge_pgns(rundb=rundb, finished=True, deleted=False, days=50, days_ltc=50)
     report("Finished runs:", *out)
-    out = purge_pgns(rundb=rundb, finished=True, deleted=True, days=10)
+    out = purge_pgns(rundb=rundb, finished=True, deleted=True, days=50)
     report("Deleted runs:", *out)
-    out = purge_pgns(rundb=rundb, finished=False, deleted=False, days=10)
+    out = purge_pgns(rundb=rundb, finished=False, deleted=False, days=50)
     report("Unfinished runs:", *out)
-    out = purge_pgns(rundb=rundb, finished=False, deleted=True, days=10)
+    out = purge_pgns(rundb=rundb, finished=False, deleted=True, days=50)
     msg = rundb.db.command({"compact": "pgns"})
     print(msg)
     msg_vtd = rundb.db.command({"compact": "vtd"})
