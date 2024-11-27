@@ -883,7 +883,7 @@ def validate_modify(request, run):
         )
         raise home(request)
 
-    max_games = 10000000
+    max_games = 50000000
     if num_games > max_games:
         request.session.flash("Number of games must be <= " + str(max_games), "error")
         raise home(request)
@@ -1126,7 +1126,7 @@ def validate_form(request):
         if data["num_games"] <= 0:
             raise Exception("Number of games must be >= 0")
 
-    max_games = 10000000
+    max_games = 50000000
     if data["num_games"] > max_games:
         raise Exception("Number of games must be <= " + str(max_games))
 
