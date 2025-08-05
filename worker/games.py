@@ -1262,12 +1262,13 @@ def run_games(
             + (
                 [
                     "-resign",
-                    "movecount=3",
-                    "score=600",
+                    "movecount=5",
+                    "score=900",
+                    "twosided=true",
                     "-draw",
                     "movenumber=34",
                     "movecount=8",
-                    "score=20",
+                    "score=10",
                 ]
                 if run["args"].get("adjudication", True)
                 else []
