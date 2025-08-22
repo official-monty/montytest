@@ -937,6 +937,13 @@ def validate_form(request):
         request.POST["stop_rule"] == "spsa" or request.POST["stop_rule"] == "sprt"
     ):
         raise Exception("Datagen only supports fixed games tests")
+    
+    # Require exactly one of Value/Policy when datagen is checked
+    if request.POST.get("datagen") is not None:
+        dv = request.POST.get("datagen_value") is not None
+        dp = request.POST.get("datagen_policy") is not None
+        if not (dv ^ dp):  # True if not exactly one is True
+            raise Exception("Select exactly one: Value or Policy for datagen")
 
     if not re.match(r"^([1-9]\d*/)?\d+(\.\d+)?(\+\d+(\.\d+)?)?$", data["tc"]):
         raise Exception("Bad time control format (base TC)")

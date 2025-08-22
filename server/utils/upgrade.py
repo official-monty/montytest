@@ -40,6 +40,8 @@ run_default = {
         "priority": 0,
         "adjudication": True,
         "datagen": False,
+        "datagen_value": True,
+        "datagen_policy": False,
     },
     "start_time": datetime.min,
     "last_updated": datetime.min,

@@ -643,7 +643,7 @@ valid_aggregated_data = intersect(
 # about non-validation of runs created with the prior
 # schema.
 
-RUN_VERSION = 6
+RUN_VERSION = 7
 
 runs_schema = intersect(
     {
@@ -700,6 +700,8 @@ runs_schema = intersect(
                 "priority": number,
                 "adjudication": bool,
                 "datagen": bool,
+                "datagen_value": bool,
+                "datagen_policy": bool,
                 "sprt?": intersect(
                     {
                         "alpha": 0.05,
