@@ -485,6 +485,7 @@ def setup_engine(
     repo_url,
     global_cache,
     datagen=False,
+    is_policy=False,
 ):
     """Download and build sources in a temporary directory then move exe to destination"""
     tmp_dir = Path(tempfile.mkdtemp(dir=worker_dir))
@@ -519,7 +520,11 @@ def setup_engine(
         establish_validated_net(remote, testing_dir, policyfile, global_cache)
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
-        cmd = ["make", "gen" if datagen else "montytest", f"EXE={destination}"]
+        cmd = [
+            "make",
+            ("gen_policy" if is_policy else "gen_value") if datagen else "montytest",
+            f"EXE={destination}",
+        ]
 
         if os.path.exists(destination):
             raise FatalException("Another worker is running in the same directory!")
@@ -1436,6 +1441,8 @@ def run_datagen_games(
 
     new_engine = testing_dir / new_engine_name
 
+    is_policy = run["args"].get("datagen_policy") is not None
+
     # Build from sources new and base engines as needed.
     if not new_engine.with_suffix(EXE_SUFFIX).exists():
         setup_engine(
@@ -1447,6 +1454,7 @@ def run_datagen_games(
             repo_url,
             global_cache,
             datagen=True,
+            is_policy=is_policy,
         )
 
     os.chdir(testing_dir)

@@ -937,7 +937,7 @@ def validate_form(request):
         request.POST["stop_rule"] == "spsa" or request.POST["stop_rule"] == "sprt"
     ):
         raise Exception("Datagen only supports fixed games tests")
-    
+
     # Require exactly one of Value/Policy when datagen is checked
     if request.POST.get("datagen") is not None:
         dv = request.POST.get("datagen_value") is not None
