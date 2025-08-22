@@ -504,6 +504,8 @@ class RunDb:
         priority=0,
         adjudication=True,
         datagen=False,
+        datagen_value=False,
+        datagen_policy=False,
     ):
         if start_time is None:
             start_time = datetime.now(timezone.utc)
@@ -539,6 +541,8 @@ class RunDb:
             "priority": priority,
             "adjudication": adjudication,
             "datagen": datagen,
+            "datagen_value": datagen_value,
+            "datagen_policy": datagen_policy,
         }
 
         if sprt is not None:

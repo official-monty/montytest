@@ -1441,7 +1441,7 @@ def run_datagen_games(
 
     new_engine = testing_dir / new_engine_name
 
-    is_policy = run["args"].get("datagen_policy") is not None
+    is_policy = run["args"].get("datagen_policy", False)
 
     # Build from sources new and base engines as needed.
     if not new_engine.with_suffix(EXE_SUFFIX).exists():

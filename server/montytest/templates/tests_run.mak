@@ -813,6 +813,8 @@
           test_signature,
           base_signature,
 		  datagen,
+          datagen_value,
+          datagen_policy,
         } = JSON.parse(testOptions);
         document.getElementById("tc").value = tc;
         document.getElementById("new_tc").value = new_tc;
