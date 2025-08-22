@@ -676,6 +676,28 @@
                         >
                       </div>
 				    </div>
+                    <div id="datagen-mode" class="col text-nowrap" style="display: none;">
+                      <div class="form-check form-check-inline mb-2">
+                        <label class="form-check-label" for="checkbox-datagen-value">Value</label>
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="checkbox-datagen-value"
+                          name="datagen_value"
+                          ${'checked' if args.get("datagen_value", False) else ''}
+                        >
+                      </div>
+                      <div class="form-check form-check-inline mb-2">
+                        <label class="form-check-label" for="checkbox-datagen-policy">Policy</label>
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="checkbox-datagen-policy"
+                          name="datagen_policy"
+                          ${'checked' if args.get("datagen_policy", False) else ''}
+                        >
+                      </div>
+                    </div>
                 </div>
               </div>
             </div>
@@ -710,6 +732,10 @@
     // Also make sure that the fields have the right visibility.
     updateOdds(document.getElementById('checkbox-time-odds'));
     toggleBook(document.getElementById('checkbox-book-visibility'));
+
+    const dmWrap = document.getElementById('datagen-mode');
+    const dg = document.getElementById('checkbox-datagen');
+    if (dmWrap && dg) dmWrap.style.display = dg.checked ? "" : "none";
   });
 
   let stopRule = null;
@@ -787,6 +813,8 @@
           test_signature,
           base_signature,
 		  datagen,
+          datagen_value,
+          datagen_policy,
         } = JSON.parse(testOptions);
         document.getElementById("tc").value = tc;
         document.getElementById("new_tc").value = new_tc;
@@ -961,9 +989,32 @@
 
           }
         }
-    })
-  ); 
+      }
 
+      const dmWrap = document.getElementById("datagen-mode");
+      if (dmWrap) {
+        dmWrap.style.display = isDatagen ? "" : "none";
+        if (!isDatagen) {
+          const dv = document.getElementById("checkbox-datagen-value");
+          const dp = document.getElementById("checkbox-datagen-policy");
+          if (dv) dv.checked = false;
+          if (dp) dp.checked = false;
+        }
+      }
+    })
+  );
+
+  (function () {
+    const dv = document.getElementById("checkbox-datagen-value");
+    const dp = document.getElementById("checkbox-datagen-policy");
+    if (!dv || !dp) return;
+    dv.addEventListener("change", function () {
+      if (dv.checked) dp.checked = false;
+    });
+    dp.addEventListener("change", function () {
+      if (dp.checked) dv.checked = false;
+    });
+  })();
 
   // Stop rule is changed
   document.querySelectorAll("[name=stop-rule]").forEach((btn) =>

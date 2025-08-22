@@ -296,23 +296,27 @@ def required_nets(engine):
     return nets
 
 
-def required_value_from_source():
+def required_value_from_source(datagen):
     pattern = re.compile("nn-[a-f0-9]{12}.network")
+
+    search_string = "DatagenValueFileName" if datagen else "ValueFileDefaultName"
 
     with open("src/networks/value.rs", "r") as srcfile:
         for line in srcfile:
-            if "ValueFileDefaultName" in line:
+            if search_string in line:
                 m = pattern.search(line)
                 if m:
                     return m.group(0)
 
 
-def required_policy_from_source():
+def required_policy_from_source(datagen):
     pattern = re.compile("nn-[a-f0-9]{12}.network")
+
+    search_string = "DatagenPolicyFileName" if datagen else "PolicyFileDefaultName"
 
     with open("src/networks/policy.rs", "r") as srcfile:
         for line in srcfile:
-            if "PolicyFileDefaultName" in line:
+            if search_string in line:
                 m = pattern.search(line)
                 if m:
                     return m.group(0)
@@ -481,6 +485,7 @@ def setup_engine(
     repo_url,
     global_cache,
     datagen=False,
+    is_policy=False,
 ):
     """Download and build sources in a temporary directory then move exe to destination"""
     tmp_dir = Path(tempfile.mkdtemp(dir=worker_dir))
@@ -505,17 +510,21 @@ def setup_engine(
         prefix = os.path.commonprefix([n.filename for n in file_list])
         os.chdir(tmp_dir / prefix)
 
-        evalfile = required_value_from_source()
+        evalfile = required_value_from_source(datagen)
         print("Build uses default value net:", evalfile)
         establish_validated_net(remote, testing_dir, evalfile, global_cache)
         shutil.copyfile(testing_dir / evalfile, evalfile)
 
-        policyfile = required_policy_from_source()
+        policyfile = required_policy_from_source(datagen)
         print("Build uses default policy net:", policyfile)
         establish_validated_net(remote, testing_dir, policyfile, global_cache)
         shutil.copyfile(testing_dir / policyfile, policyfile)
 
-        cmd = ["make", "gen" if datagen else "montytest", f"EXE={destination}"]
+        cmd = [
+            "make",
+            ("gen_policy" if is_policy else "gen_value") if datagen else "montytest",
+            f"EXE={destination}",
+        ]
 
         if os.path.exists(destination):
             raise FatalException("Another worker is running in the same directory!")
@@ -1432,6 +1441,8 @@ def run_datagen_games(
 
     new_engine = testing_dir / new_engine_name
 
+    is_policy = run["args"].get("datagen_policy", False)
+
     # Build from sources new and base engines as needed.
     if not new_engine.with_suffix(EXE_SUFFIX).exists():
         setup_engine(
@@ -1443,6 +1454,7 @@ def run_datagen_games(
             repo_url,
             global_cache,
             datagen=True,
+            is_policy=is_policy,
         )
 
     os.chdir(testing_dir)
