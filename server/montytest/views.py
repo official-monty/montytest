@@ -783,7 +783,7 @@ def get_sha(branch, repo_url):
         return "", ""
 
 
-def get_nets(commit_sha, repo_url):
+def get_nets(commit_sha, repo_url, datagen):
     """Get the nets from evaluate.h or ucioption.cpp in the repo"""
     api_url = repo_url.replace(
         "https://github.com", "https://raw.githubusercontent.com"
@@ -792,10 +792,17 @@ def get_nets(commit_sha, repo_url):
         nets = []
         pattern = re.compile("nn-[a-f0-9]{12}.network")
 
+        policy_search_string = (
+            "DatagenPolicyFileName" if datagen else "PolicyFileDefaultName"
+        )
+        value_search_string = (
+            "DatagenValueFileName" if datagen else "ValueFileDefaultName"
+        )
+
         url1 = api_url + "/" + commit_sha + "/src/networks/policy.rs"
         options = requests.get(url1).content.decode("utf-8")
         for line in options.splitlines():
-            if "PolicyFileDefaultName" in line:
+            if policy_search_string in line:
                 m = pattern.search(line)
                 if m:
                     nets.append(m.group(0))
@@ -803,7 +810,7 @@ def get_nets(commit_sha, repo_url):
         url1 = api_url + "/" + commit_sha + "/src/networks/value.rs"
         options = requests.get(url1).content.decode("utf-8")
         for line in options.splitlines():
-            if "ValueFileDefaultName" in line:
+            if value_search_string in line:
                 m = pattern.search(line)
                 if m:
                     nets.append(m.group(0))
@@ -1052,9 +1059,11 @@ def validate_form(request):
     )
     data["base_same_as_master"] = master_diff.text == ""
 
+    datagen = request.POST.get("datagen") is not None
+
     # Store nets info
-    data["base_nets"] = get_nets(data["resolved_base"], data["tests_repo"])
-    data["new_nets"] = get_nets(data["resolved_new"], data["tests_repo"])
+    data["base_nets"] = get_nets(data["resolved_base"], data["tests_repo"], datagen)
+    data["new_nets"] = get_nets(data["resolved_new"], data["tests_repo"], datagen)
 
     # Test existence of nets
     missing_nets = []
