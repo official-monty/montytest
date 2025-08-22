@@ -1071,7 +1071,8 @@ class RunDb:
             BASELINE_NPS = 198243  # Baseline NPS remember to adjust
             game_time = run["args"]["nodes"] * 137 / (BASELINE_NPS / 5)
             games = self.task_duration / game_time * worker_info["concurrency"]
-            games = min(max(2, 2 * int(games / 2 + 1 / 2)), 3500)
+            cap = 15000 if run["args"].get("datagen_value", False) else 3500
+            games = min(max(2, 2 * int(games / 2 + 1 / 2)), cap)
         else:
             games = max(2, 2 * int(games / 2 + 1 / 2))
         return games
