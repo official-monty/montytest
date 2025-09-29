@@ -47,7 +47,7 @@ def initialize_info(rundb, clear_stats):
 def compute_games_rates(rundb, info_tuple):
     # use the reference core nps, also set in rundb.py and games.py
     for machine in rundb.get_machines():
-        BASELINE_NPS = 198243
+        BASELINE_NPS = 133779
         if "datagen" in machine["run"]["args"] and machine["run"]["args"].get(
             "datagen", False
         ):
@@ -80,7 +80,7 @@ def process_run(run, info):
 
     # Update the information for the workers contributed by the users
     if "datagen" in run["args"] and run["args"].get("datagen", False):
-        BASELINE_NPS = 198243
+        BASELINE_NPS = 133779
         adjusted_tc = run["args"]["nodes"] * 137 / (BASELINE_NPS / 4)
     else:
         adjusted_tc = estimate_game_duration(run["args"]["tc"]) * int(
