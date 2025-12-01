@@ -989,18 +989,16 @@
 
           }
         }
-      }
-
-      const dmWrap = document.getElementById("datagen-mode");
-      if (dmWrap) {
-        dmWrap.style.display = isDatagen ? "" : "none";
-        if (!isDatagen) {
-          const dv = document.getElementById("checkbox-datagen-value");
-          const dp = document.getElementById("checkbox-datagen-policy");
-          if (dv) dv.checked = false;
-          if (dp) dp.checked = false;
+        const dmWrap = document.getElementById("datagen-mode");
+        if (dmWrap) {
+          dmWrap.style.display = isDatagen ? "" : "none";
+          if (!isDatagen) {
+            const dv = document.getElementById("checkbox-datagen-value");
+            const dp = document.getElementById("checkbox-datagen-policy");
+            if (dv) dv.checked = false;
+            if (dp) dp.checked = false;
+          }
         }
-      }
     })
   );
 
