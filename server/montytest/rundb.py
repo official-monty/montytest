@@ -129,7 +129,7 @@ class RunDb:
             # excess of caution
             with self.active_run_lock(str(run["_id"])):
                 tasks = copy.copy(run["tasks"])
-            BASELINE_NPS = 198243
+            BASELINE_NPS = 133779
             for task in tasks:
                 if task["active"]:
                     concurrency = task["worker_info"]["concurrency"]
@@ -1072,7 +1072,7 @@ class RunDb:
             batch_size = 2 * run["args"]["sprt"].get("batch_size", 1)
             games = max(batch_size, batch_size * int(games / batch_size + 1 / 2))
         elif "datagen" in run["args"] and run["args"].get("datagen", False):
-            BASELINE_NPS = 198243  # Baseline NPS remember to adjust
+            BASELINE_NPS = 133779  # Baseline NPS remember to adjust
             game_time = run["args"]["nodes"] * 137 / (BASELINE_NPS / 5)
             games = self.task_duration / game_time * worker_info["concurrency"]
             cap = 15000 if run["args"].get("datagen_value", False) else 3500
