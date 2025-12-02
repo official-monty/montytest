@@ -760,12 +760,14 @@ def get_master_info(url):
 
 def get_valid_books():
     response = requests.get(
-        "https://api.github.com/repos/official-monty/books/git/trees/master?recursive=1"
+        "https://huggingface.co/api/datasets/Viren6/MontyBooks/tree/main?recursive=1"
     ).json()
+    entries = response.get("tree", response) if isinstance(response, dict) else response
     books_list = (
         str(Path(item["path"]).stem)
-        for item in response["tree"]
-        if item["type"] == "blob" and item["path"].endswith((".epd.zip", ".pgn.zip"))
+        for item in entries
+        if item["type"] == "blob"
+        and item["path"].endswith((".epd.zst", ".pgn.zst", ".epd.zstd", ".pgn.zstd"))
     )
     return books_list
 

@@ -69,7 +69,7 @@ LOCK_FILE = Path(__file__).resolve().parent / "worker.lock"
 MIN_CARGO_MAJOR = 1
 MIN_CARGO_MINOR = 77
 
-WORKER_VERSION = 36
+WORKER_VERSION = 37
 FILE_LIST = ["updater.py", "worker.py", "games.py"]
 HTTP_TIMEOUT = 30.0
 INITIAL_RETRY_TIME = 15.0
@@ -112,7 +112,7 @@ Apis used by the worker
 
 <montytest>     = https://tests.montychess.org
 <github>       = https://api.github.com
-<github-books> = <github>/repos/official-monty/books
+<huggingface-books> = https://huggingface.co/api/datasets/Viren6/MontyBooks
 
 Heartbeat           <montytest>/api/beat                                         POST
 
@@ -120,9 +120,9 @@ Setup task          <github>/rate_limit                                         
                     <montytest>/api/request_version                              POST
                     <montytest>/api/request_task                                 POST
                     <montytest>/api/nn/<nnue>                                    GET
-                    <github-books>/git/trees/master                             GET
+                    <huggingface-books>                                          GET
                     <github>/repos/Disservin/fastchess/zipball/<sha>           GET
-                    <github-books>/git/trees/master/blobs/<sha-book>            GET
+                    https://huggingface.co/datasets/Viren6/MontyBooks/resolve/main/<book>
                     <github>/repos/<user-repo>/zipball/<sha>                    GET
 
 Main loop           <montytest>/api/update_task                                  POST

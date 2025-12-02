@@ -350,7 +350,7 @@ legend {
   font-weight: 400;
 }
 
-.mainnavbar [href="https://github.com/official-monty/books"]::before
+.mainnavbar [href="https://huggingface.co/datasets/Viren6/MontyBooks"]::before
 {
   content: "\f02d";
 }

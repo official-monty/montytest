@@ -470,7 +470,7 @@
                     </li>
                     <li>
                       <a
-                        href="https://github.com/official-monty/books"
+                        href="https://huggingface.co/datasets/Viren6/MontyBooks"
                         target="_blank"
                         rel="noopener"
                         class="links-link rounded"

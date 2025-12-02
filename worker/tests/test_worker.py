@@ -23,7 +23,7 @@ class workerTest(unittest.TestCase):
     def test_item_download(self):
         blob = None
         try:
-            blob = games.download_from_github("README.md")
+            blob = games.download_from_huggingface_dataset("README.md")
         except:
             pass
         self.assertFalse(blob is None)

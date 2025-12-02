@@ -22,7 +22,13 @@ from pathlib import Path
 from queue import Empty, Queue
 from zipfile import ZipFile
 
+# Fall back to the provided packages if missing in the local system.
+packages_dir = Path(__file__).resolve().parent / "packages"
+if str(packages_dir) not in sys.path:
+    sys.path.append(str(packages_dir))
+
 import requests
+import zstandard as zstd
 
 BASELINE_NPS = 133779
 IS_WINDOWS = "windows" in platform.system().lower()
@@ -72,6 +78,8 @@ UPDATE_RETRY_TIME = 15.0
 
 RAWCONTENT_HOST = "https://raw.githubusercontent.com"
 API_HOST = "https://api.github.com"
+HUGGINGFACE_DATASET_HOST = "https://huggingface.co/datasets"
+BOOKS_DATASET = "Viren6/MontyBooks"
 EXE_SUFFIX = ".exe" if IS_WINDOWS else ""
 
 
@@ -465,6 +473,17 @@ def download_from_github(item, owner="official-monty", repo="books", branch="mas
     return blob
 
 
+def download_from_huggingface_dataset(item, dataset=BOOKS_DATASET, revision="main"):
+    item_url = f"{HUGGINGFACE_DATASET_HOST}/{dataset}/resolve/{revision}/{item}"
+    print("Downloading {}".format(item_url))
+    try:
+        return requests_get(item_url, timeout=HTTP_TIMEOUT).content
+    except FatalException:
+        raise
+    except Exception as e:
+        raise WorkerException(f"Unable to download {item}", e=e)
+
+
 def unzip(blob, save_dir):
     cd = os.getcwd()
     os.chdir(save_dir)
@@ -474,6 +493,37 @@ def unzip(blob, save_dir):
         file_list = zip_file.infolist()
     os.chdir(cd)
     return file_list
+
+
+def decompress_zstd(blob, save_dir, output_name):
+    cd = os.getcwd()
+    os.chdir(save_dir)
+    try:
+        decompressor = zstd.ZstdDecompressor()
+        with decompressor.stream_reader(io.BytesIO(blob)) as reader:
+            with open(output_name, "wb") as output_file:
+                shutil.copyfileobj(reader, output_file)
+    except Exception as e:
+        raise WorkerException(f"Unable to decompress {output_name}", e=e)
+    finally:
+        os.chdir(cd)
+
+
+def obtain_opening_book(book, save_dir):
+    errors = []
+    for extension in (".zst", ".zstd"):
+        archive_name = book + extension
+        try:
+            blob = download_from_huggingface_dataset(archive_name)
+            decompress_zstd(blob, save_dir, book)
+            return
+        except WorkerException as e:
+            errors.append(str(e))
+        except Exception as e:
+            errors.append(str(e))
+    raise WorkerException(
+        f"Unable to download and decompress {book}: {'; '.join(errors)}"
+    )
 
 
 def setup_engine(
@@ -1098,9 +1148,7 @@ def run_games(
 
     # Download the opening book if missing in the directory.
     if not (testing_dir / book).exists() or (testing_dir / book).stat().st_size == 0:
-        zipball = book + ".zip"
-        blob = download_from_github(zipball)
-        unzip(blob, testing_dir)
+        obtain_opening_book(book, testing_dir)
 
     # Clean up the old networks (keeping the num_bkps most recent)
     num_bkps = 10
@@ -1461,9 +1509,7 @@ def run_datagen_games(
 
     # Download the opening book if missing in the directory.
     if not (testing_dir / book).exists() or (testing_dir / book).stat().st_size == 0:
-        zipball = book + ".zip"
-        blob = download_from_github(zipball)
-        unzip(blob, testing_dir)
+        obtain_opening_book(book, testing_dir)
 
     # Verify that the signatures are correct.
     run_errors = []
