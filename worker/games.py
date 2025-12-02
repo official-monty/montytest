@@ -522,7 +522,7 @@ def setup_engine(
 
         cmd = [
             "make",
-            ("gen_policy" if is_policy else "gen_value") if datagen else "montytest",
+            ("gen-policy" if is_policy else "gen-value") if datagen else "montytest",
             f"EXE={destination}",
         ]
 

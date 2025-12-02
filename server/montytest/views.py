@@ -1020,6 +1020,8 @@ def validate_form(request):
     data["adjudication"] = request.POST.get("adjudication") is None
 
     data["datagen"] = request.POST.get("datagen") is not None
+    data["datagen_value"] = request.POST.get("datagen_value") is not None
+    data["datagen_policy"] = request.POST.get("datagen_policy") is not None
 
     # In case of reschedule use old data,
     # otherwise resolve sha and update user's tests_repo
@@ -1531,6 +1533,13 @@ def tests_view(request):
     follow = 1 if "follow" in request.params else 0
     results = run["results"]
     run_args = [("id", str(run["_id"]), "")]
+    datagen_flag = run["args"].get("datagen", False)
+    datagen_type = None
+    if datagen_flag:
+        if run["args"].get("datagen_policy"):
+            datagen_type = "policy"
+        elif run["args"].get("datagen_value"):
+            datagen_type = "value"
     if run.get("rescheduled_from"):
         run_args.append(("rescheduled_from", run["rescheduled_from"], ""))
 
@@ -1570,6 +1579,14 @@ def tests_view(request):
 
         value = run["args"][name]
         url = ""
+
+        if name == "nodes":
+            if not datagen_flag:
+                continue
+            run_args.append((name, html.escape(str(value)), url))
+            if datagen_type:
+                run_args.append(("datagen_type", html.escape(datagen_type), ""))
+            continue
 
         if name == "new_tag" and "msg_new" in run["args"]:
             value += "  (" + run["args"]["msg_new"][:50] + ")"
