@@ -761,15 +761,24 @@ def get_master_info(url):
 def get_valid_books():
     response = requests.get(
         "https://huggingface.co/api/datasets/Viren6/MontyBooks/tree/main?recursive=1"
-    ).json()
-    entries = response.get("tree", response) if isinstance(response, dict) else response
-    books_list = (
-        str(Path(item["path"]).stem)
-        for item in entries
-        if item["type"] == "blob"
-        and item["path"].endswith((".epd.zst", ".pgn.zst", ".epd.zstd", ".pgn.zstd"))
     )
-    return books_list
+    response.raise_for_status()
+
+    entries = response.json()
+    if isinstance(entries, dict):
+        entries = entries.get("tree", entries)
+
+    books = set()
+    for item in entries:
+        item_type = item.get("type")
+        if item_type not in ("blob", "file"):
+            continue
+
+        path = item.get("path", "")
+        if path.endswith((".epd.zst", ".pgn.zst", ".epd.zstd", ".pgn.zstd")):
+            books.add(str(Path(path).stem))
+
+    return sorted(books)
 
 
 def get_sha(branch, repo_url):
