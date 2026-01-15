@@ -1077,6 +1077,10 @@ class RunDb:
             games = self.task_duration / game_time * worker_info["concurrency"]
             cap = 15000 if run["args"].get("datagen_value", False) else 3500
             games = min(max(2, 2 * int(games / 2 + 1 / 2)), cap)
+
+            # TEMP: force fixed games for value datagen
+            if run["args"].get("datagen_value", False):
+                games = 2048 * worker_info["concurrency"]
         else:
             games = max(2, 2 * int(games / 2 + 1 / 2))
         return games
