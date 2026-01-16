@@ -884,15 +884,6 @@ def validate_modify(request, run):
         raise home(request)
 
     num_games = int(request.POST["num-games"])
-    if (
-        num_games > run["args"]["num_games"]
-        and "sprt" not in run["args"]
-        and "spsa" not in run["args"]
-    ):
-        request.session.flash(
-            "Unable to modify number of games in a fixed game test!", "error"
-        )
-        raise home(request)
 
     if "spsa" in run["args"] and num_games != run["args"]["num_games"]:
         request.session.flash(
@@ -901,14 +892,9 @@ def validate_modify(request, run):
         )
         raise home(request)
 
-    max_games = 10000000
+    max_games = 100000000
     if num_games > max_games:
         request.session.flash("Number of games must be <= " + str(max_games), "error")
-        raise home(request)
-
-    now = datetime.now(timezone.utc)
-    if "start_time" not in run or (now - run["start_time"]).days > 30:
-        request.session.flash("Run too old to be modified", "error")
         raise home(request)
 
 
