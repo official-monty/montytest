@@ -1080,7 +1080,7 @@ class RunDb:
 
             # TEMP: force fixed games for value datagen
             if run["args"].get("datagen_value", False):
-                games = 2048 * worker_info["concurrency"]
+                games = min(512 * worker_info["concurrency"], 24576)
         else:
             games = max(2, 2 * int(games / 2 + 1 / 2))
         return games
